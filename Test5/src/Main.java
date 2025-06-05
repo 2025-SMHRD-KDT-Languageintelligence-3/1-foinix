@@ -23,5 +23,7 @@ public class Main {
 		颊己林 obj5 = new 颊己林();
 		obj.show();
 	}
+	
+	
 
 }
