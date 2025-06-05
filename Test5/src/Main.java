@@ -9,19 +9,19 @@ public class Main {
 		obj.show();
 		
 		김산해 obj1 = new 김산해();
-		obj.show();
+		obj1.show();
 		
 		유미선 obj2 = new 유미선();
-		obj.show();
+		obj2.show();
 		
 		나승주 obj3 = new 나승주();
-		obj.show();
+		obj3.show();
 		
 		서광테 obj4 = new 서광테();
-		obj.show();
+		obj4.show();
 		
 		손성주 obj5 = new 손성주();
-		obj.show();
+		obj5.show();
 	}
 	
 	
