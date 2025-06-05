@@ -1,9 +1,7 @@
 
 public class 알서코 {
 
-	public static void main(String[] args) {
-		System.out.println("aaaa");
-
+	public void show() {
+		System.out.println("피자");
 	}
-
 }
