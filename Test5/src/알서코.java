@@ -2,7 +2,7 @@
 public class ¾Ë¼­ÄÚ {
 
 	public static void main(String[] args) {
-		System.out.println("adadad");
+		System.out.println("aaaa");
 
 	}
 
