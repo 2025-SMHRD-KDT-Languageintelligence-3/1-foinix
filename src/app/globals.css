@@ -1,0 +1,120 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* "Midnight Blue" Theme - Dark page background, light content boxes */
+    --background: 230 35% 12%;             /* Dark Blue (Page Background) */
+    --foreground: 220 20% 90%;             /* Clear Light Cool Blue/Gray (Text on Dark Page) */
+    
+    --card: 0 0% 100%;                      /* White (for cards) */
+    --card-foreground: 0 0% 15%;        /* Very Dark Neutral Gray (Text on White Cards) */
+    
+    --popover: 0 0% 100%;                   /* White (for popovers) */
+    --popover-foreground: 0 0% 15%;     /* Very Dark Neutral Gray (Text on White Popovers) */
+    
+    --primary: 210 70% 55%;                 /* Bright, clear blue for primary actions */
+    --primary-foreground: 0 0% 100%;        /* White text on primary actions */
+    
+    --secondary: 220 40% 45%;               /* Muted medium blue for secondary buttons/areas */
+    --secondary-foreground: 0 0% 100%;      /* White text on secondary */
+    
+    --muted: 230 25% 22%;                   /* Dark muted blue for subtle backgrounds on the page */
+    --muted-foreground: 220 15% 75%;        /* Light Gray (Muted text on dark page) */
+    
+    --accent: 190 70% 50%;                  /* Tealish blue for accents */
+    --accent-foreground: 0 0% 100%;         /* White text on accent */
+    
+    --destructive: 0 70% 50%;               /* Brighter red for destructive actions on dark theme */
+    --destructive-foreground: 0 0% 98%;     /* Light text on destructive actions */
+    
+    --border: 220 25% 35%;                  /* Medium-dark blue border for cards/inputs on cards */
+    --input: 220 20% 97%;                   /* Very Light Cool Blue for input backgrounds on cards */
+    --ring: 210 70% 55%;                    /* Primary blue for focus rings */
+    
+    --chart-1: 210 70% 70%;
+    --chart-2: 200 70% 60%;
+    --chart-3: 180 60% 50%;
+    --chart-4: 210 70% 50%;
+    --chart-5: 190 70% 75%;
+    --radius: 0.75rem;
+
+    /* Sidebar specific colors - Default (Midnight Blue page) */
+    --sidebar-background: 230 30% 18%;      /* Darker blue, distinct from page body */
+    --sidebar-foreground: 220 20% 80%;      /* Light text */
+    --sidebar-primary: 210 70% 55%;         /* Bright Blue */
+    --sidebar-primary-foreground: 0 0% 100%;/* White */
+    --sidebar-accent: 190 70% 50%;          /* Tealish Blue Accent */
+    --sidebar-accent-foreground: 0 0% 100%; /* White */
+    --sidebar-border: 220 25% 28%;          /* Darker blue border for sidebar */
+    --sidebar-ring: 210 70% 55%;            /* Primary blue for focus */
+  }
+
+  .dark {
+    /* Dark Mode Variation - Even Deeper Midnight Blue */
+    --background: 230 40% 8%;               /* Deeper Dark Blue (Page Background) */
+    --foreground: 220 20% 95%;              /* Even Lighter Cool Blue/Gray (Text on Deep Dark Page) */
+    
+    --card: 0 0% 100%;                      /* White (for cards, consistent) */
+    --card-foreground: 0 0% 10%;        /* Near Black Neutral Gray (Text on White Cards) */
+    
+    --popover: 0 0% 100%;                   /* White (for popovers) */
+    --popover-foreground: 0 0% 10%;     /* Near Black Neutral Gray (Text on White Popovers) */
+    
+    --primary: 200 70% 60%;                 /* Slightly more cyan-like blue for primary actions */
+    --primary-foreground: 230 30% 10%;      /* Very dark text on this primary for contrast */
+    
+    --secondary: 220 35% 35%;               /* Muted dark blue */
+    --secondary-foreground: 220 20% 90%;    /* Light text on secondary */
+    
+    --muted: 230 25% 12%;                   /* Very dark muted blue */
+    --muted-foreground: 220 15% 80%;        /* Lighter Gray (Muted text on very dark page) */
+    
+    --accent: 180 60% 55%;                  /* Teal accent */
+    --accent-foreground: 0 0% 100%;         /* White text on accent */
+    
+    --destructive: 0 65% 55%;               /* Slightly more vibrant red for dark */
+    --destructive-foreground: 0 0% 95%;     /* Light text on destructive */
+    
+    --border: 220 25% 25%;                  /* Darker blue border */
+    --input: 220 20% 97%;                   /* Very Light Cool Blue for input backgrounds on cards */
+    --ring: 200 70% 60%;                    /* Brighter cyan/blue for focus rings */
+    
+    --chart-1: 190 60% 65%;
+    --chart-2: 180 55% 55%;
+    --chart-3: 200 60% 45%;
+    --chart-4: 210 50% 60%;
+    --chart-5: 170 50% 70%;
+    
+    /* Sidebar specific colors - Dark Mode Variation */
+    --sidebar-background: 230 35% 10%;      /* Even darker blue */
+    --sidebar-foreground: 220 20% 88%;      /* Light text */
+    --sidebar-primary: 200 70% 60%;         /* Brighter cyan/blue */
+    --sidebar-primary-foreground: 230 30% 10%;/* Dark text on primary */
+    --sidebar-accent: 180 60% 55%;          /* Teal Accent */
+    --sidebar-accent-foreground: 0 0% 100%; /* White */
+    --sidebar-border: 220 25% 20%;          /* Very dark blue border for sidebar */
+    --sidebar-ring: 200 70% 60%;            /* Brighter cyan/blue for focus */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply font-body;
+    /* New blue-toned gradient */
+    background-image: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: hsl(var(--foreground)); /* This will be light text for content directly on body */
+  }
+
+  .dark body {
+    /* New blue-toned gradient for dark mode as well */
+    background-image: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: hsl(var(--foreground)); /* This will be light text for content directly on body */
+  }
+}
+    
