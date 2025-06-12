@@ -1,0 +1,630 @@
+
+"use client";
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import type { KioskState, VehicleInfo, ChargingSlot, AppData, ConnectorTypeInfo, CarBrand, CarModel, BillDetails, OperatingMode } from '@/types/kiosk';
+import { useToast } from "@/hooks/use-toast";
+import { Language, t as translateFunction } from '@/lib/translations';
+
+import { FullScreenCameraView } from '@/components/kiosk/FullScreenCameraView';
+import { InitialWelcomeScreen } from '@/components/kiosk/InitialWelcomeScreen';
+// import { LiveCameraFeedScreen } from '@/components/kiosk/LiveCameraFeedScreen'; // Removed
+import { DataConsentScreen } from '@/components/kiosk/DataConsentScreen';
+import { SelectCarBrandScreen } from '@/components/kiosk/SelectCarBrandScreen';
+import { SelectCarModelScreen } from '@/components/kiosk/SelectCarModelScreen';
+import { PrePaymentAuthScreen } from '@/components/kiosk/PrePaymentAuthScreen';
+import { InitialPromptConnectScreen } from '@/components/kiosk/InitialPromptConnectScreen';
+import { SelectConnectorTypeScreen } from '@/components/kiosk/SelectConnectorTypeScreen';
+import { DetectConnectionScreen } from '@/components/kiosk/DetectConnectionScreen';
+import { ConfirmStartChargingScreen } from '@/components/kiosk/ConfirmStartChargingScreen';
+import { VacateSlotReminderScreen } from '@/components/kiosk/VacateSlotReminderScreen';
+import { VehicleConfirmationScreen } from '@/components/kiosk/VehicleConfirmationScreen';
+import { WelcomeScreen } from '@/components/kiosk/WelcomeScreen';
+import { SlotAssignmentScreen } from '@/components/kiosk/SlotAssignmentScreen';
+import { QueueScreen } from '@/components/kiosk/QueueScreen';
+import { ChargingInProgressScreen } from '@/components/kiosk/ChargingInProgressScreen';
+import { PaymentScreen } from '@/components/kiosk/PaymentScreen';
+import { ThankYouScreen } from '@/components/kiosk/ThankYouScreen';
+import { ChargingErrorScreen } from '@/components/kiosk/ChargingErrorScreen';
+
+
+const MOCK_CAR_MODELS_HYUNDAI: CarModel[] = [
+  { id: 'ioniq5', name: 'carModel.hyundai.ioniq5', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Hyundai Ioniq5' },
+  { id: 'kona_ev', name: 'carModel.hyundai.kona_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Hyundai KonaEV' },
+  { id: 'ioniq6', name: 'carModel.hyundai.ioniq6', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Hyundai Ioniq6' },
+  { id: 'nexo', name: 'carModel.hyundai.nexo', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Hyundai Nexo' },
+  { id: 'casper_ev', name: 'carModel.hyundai.casper_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Hyundai CasperEV' },
+  { id: 'porter_ev', name: 'carModel.hyundai.porter_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Hyundai PorterEV' },
+];
+const MOCK_CAR_MODELS_KIA: CarModel[] = [
+  { id: 'ev6', name: 'carModel.kia.ev6', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia EV6' },
+  { id: 'niro_ev', name: 'carModel.kia.niro_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia NiroEV' },
+  { id: 'ev9', name: 'carModel.kia.ev9', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia EV9' },
+  { id: 'soul_ev', name: 'carModel.kia.soul_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia SoulEV' },
+  { id: 'ray_ev', name: 'carModel.kia.ray_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia RayEV' },
+  { id: 'bongo_ev', name: 'carModel.kia.bongo_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia BongoEV' },
+];
+const MOCK_CAR_MODELS_KG: CarModel[] = [
+  { id: 'torres_evx', name: 'carModel.kgm.torres_evx', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'KG TorresEVX' },
+  { id: 'korando_emotion', name: 'carModel.kgm.korando_emotion', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'KG Korando' },
+];
+const MOCK_CAR_MODELS_TESLA: CarModel[] = [
+  { id: 'model_3', name: 'carModel.tesla.model_3', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Tesla Model3' },
+  { id: 'model_y', name: 'carModel.tesla.model_y', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Tesla ModelY' },
+  { id: 'model_s', name: 'carModel.tesla.model_s', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Tesla ModelS' },
+  { id: 'model_x', name: 'carModel.tesla.model_x', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Tesla ModelX' },
+  { id: 'cybertruck', name: 'carModel.tesla.cybertruck', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Tesla Cybertruck' },
+  { id: 'roadster', name: 'carModel.tesla.roadster', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Tesla Roadster' },
+];
+
+const MOCK_CAR_BRANDS: CarBrand[] = [
+  { id: 'hyundai', name: 'carBrand.hyundai', logoUrl: 'https://placehold.co/150x150.png', dataAiHint: 'Hyundai logo', models: MOCK_CAR_MODELS_HYUNDAI },
+  { id: 'kia', name: 'carBrand.kia', logoUrl: 'https://placehold.co/150x150.png', dataAiHint: 'Kia logo', models: MOCK_CAR_MODELS_KIA },
+  { id: 'kgm', name: 'carBrand.kgm', logoUrl: 'https://placehold.co/150x150.png', dataAiHint: 'KGMobility logo', models: MOCK_CAR_MODELS_KG },
+  { id: 'tesla', name: 'carBrand.tesla', logoUrl: 'https://placehold.co/150x150.png', dataAiHint: 'Tesla logo', models: MOCK_CAR_MODELS_TESLA },
+];
+
+const MOCK_VEHICLE_DATA: VehicleInfo = {
+  licensePlate: `데모-${Math.floor(Math.random() * 900) + 100}`,
+  model: "carModel.tesla.model_y",
+  portLocationDescription: "selectCarModel.portLocationGeneric",
+  connectionImageUrl: 'https://placehold.co/600x400.png',
+  dataAiHint: "vehicle charging",
+  confidence: 0.95,
+  recommendedConnectorType: 'ccs_combo_2',
+};
+
+const MOCK_AVAILABLE_CONNECTORS: ConnectorTypeInfo[] = [
+  { id: 'ac_type_1', name: 'connector.ac_type_1.name', imageUrl: 'https://placehold.co/200x150.png', dataAiHint: 'AC connector', description: 'connector.ac_type_1.description' },
+  { id: 'ccs_combo_2', name: 'connector.ccs_combo_2.name', imageUrl: 'https://placehold.co/200x150.png', dataAiHint: 'CCS2 connector', description: 'connector.ccs_combo_2.description' },
+];
+
+const MOCK_SLOTS_DATA: ChargingSlot[] = [
+  { id: 'A1', status: 'available' },
+  { id: 'A2', status: 'occupied', vehicle: { licensePlate: "기존-EV", model:"Nissan Leaf"}, estimatedCompletionTime: "10분", currentChargeKW: 60, user:"기존-EV" },
+  { id: 'B1', status: 'available' },
+  { id: 'B2', status: 'maintenance' },
+];
+
+const MOCK_INITIAL_APP_DATA: AppData = {
+  vehicleInfo: null,
+  chargingInstructions: null,
+  assignedSlotId: null,
+  currentSlots: MOCK_SLOTS_DATA,
+  selectedConnectorType: null,
+  finalBill: null,
+  receiptPreference: undefined,
+  isQueueNotEmpty: false,
+  consentSkipped: false,
+  selectedBrandId: null,
+  language: 'ko',
+  currentMode: 'standard',
+  chargingErrorMessage: null,
+};
+
+const CHARGING_PROGRESS_STORAGE_KEY = 'kioskChargingProgressState';
+
+export default function KioskPage() {
+  const [kioskState, setKioskState] = useState<KioskState>('PRE_PROCESSING_CAMERA_FEED');
+  const [appData, setAppData] = useState<AppData>(MOCK_INITIAL_APP_DATA);
+  const [disagreeTapCount, setDisagreeTapCount] = useState(0);
+  const { toast } = useToast();
+  const generalTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const t = useCallback((key: string, params?: Record<string, string | number>) => {
+    return translateFunction(appData.language, key, params);
+  }, [appData.language]);
+
+  const clearGeneralTimer = useCallback(() => {
+    if (generalTimerRef.current) {
+      clearTimeout(generalTimerRef.current);
+      generalTimerRef.current = null;
+    }
+  }, []);
+
+  const resetToInitialWelcome = useCallback(() => {
+    clearGeneralTimer();
+    if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(CHARGING_PROGRESS_STORAGE_KEY);
+    }
+    const freshSlots = MOCK_SLOTS_DATA.map(s => {
+        if (s.id === 'A2' && s.status === 'occupied') {
+            const translatedCalculating = translateFunction(appData.language, 'waitTimeDisplay.calculating');
+            return {...s, estimatedCompletionTime: translatedCalculating};
+        }
+        return {...s, status: s.id !== 'B2' ? 'available' : 'maintenance', vehicle: undefined, user: undefined };
+    });
+
+    setAppData(prev => ({
+      ...MOCK_INITIAL_APP_DATA,
+      language: prev.language, 
+      currentMode: 'standard', 
+      currentSlots: freshSlots,
+      consentSkipped: false, 
+      selectedBrandId: null, 
+      chargingErrorMessage: null, 
+    }));
+    setDisagreeTapCount(0);
+    
+    setKioskState('INITIAL_WELCOME');
+  }, [clearGeneralTimer, appData.language]); 
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      document.documentElement.lang = appData.language;
+      document.title = t(appData.language === 'ko' ? 'layout.title.ko' : 'layout.title.en');
+    }
+  }, [appData.language, t]);
+
+
+  useEffect(() => {
+    // This timer is for WELCOME state transitions
+    if (kioskState === 'WELCOME' && appData.currentMode === 'standard') {
+      clearGeneralTimer();
+      generalTimerRef.current = setTimeout(async () => {
+        const vehicleWithPortInfo: VehicleInfo = {
+          ...MOCK_VEHICLE_DATA,
+          licensePlate: `${t('selectCarModel.manualEntryLicensePlate')}-${Math.floor(Math.random() * 900) + 100}`,
+          model: MOCK_VEHICLE_DATA.model,
+        };
+        setAppData(prev => ({
+          ...prev,
+          vehicleInfo: vehicleWithPortInfo,
+        }));
+        setKioskState('VEHICLE_CONFIRMATION');
+      }, 1500);
+    }
+    else if (kioskState === 'WELCOME' && appData.currentMode === 'quick' && appData.vehicleInfo) {
+      clearGeneralTimer();
+      generalTimerRef.current = setTimeout(() => {
+        setKioskState('VEHICLE_CONFIRMATION');
+      }, 1500);
+    }
+    return () => clearGeneralTimer();
+  }, [kioskState, appData.currentMode, appData.vehicleInfo, clearGeneralTimer, t]);
+
+
+  // useEffect for automatic reset from THANK_YOU and VACATE_SLOT_REMINDER states
+  useEffect(() => {
+    let specificResetTimer: NodeJS.Timeout | null = null;
+
+    const initiateResetCountdown = () => {
+      cancelResetCountdown(); 
+      specificResetTimer = setTimeout(() => {
+        resetToInitialWelcome();
+      }, kioskState === 'VACATE_SLOT_REMINDER' ? (3 * 60 * 1000) : 60000); 
+    };
+
+    const cancelResetCountdown = () => {
+      if (specificResetTimer) {
+        clearTimeout(specificResetTimer);
+        specificResetTimer = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (kioskState === 'THANK_YOU' || kioskState === 'VACATE_SLOT_REMINDER') {
+        if (document.visibilityState === 'visible') {
+          initiateResetCountdown(); 
+        } else {
+          cancelResetCountdown(); 
+        }
+      }
+    };
+
+    if (kioskState === 'THANK_YOU' || kioskState === 'VACATE_SLOT_REMINDER') {
+      if (document.visibilityState === 'visible') {
+        initiateResetCountdown(); 
+      }
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    } else {
+      cancelResetCountdown(); 
+    }
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      cancelResetCountdown(); 
+    };
+  }, [kioskState, resetToInitialWelcome]);
+
+
+  const handleLanguageSwitch = useCallback(() => {
+    setAppData(prev => ({
+      ...prev,
+      language: prev.language === 'ko' ? 'en' : 'ko',
+    }));
+  }, []);
+  
+  const handleQuickStart = () => {
+    clearGeneralTimer();
+    console.log('Firebase Log (simulated): mode_selected_intent, mode: quick, timestamp:', new Date().toISOString(), 'language:', appData.language);
+    
+    const quickStartVehicleInfo: VehicleInfo = {
+      ...MOCK_VEHICLE_DATA, 
+      licensePlate: `${t('selectCarModel.manualEntryLicensePlate')}-QS-${Math.floor(Math.random() * 900) + 100}`, 
+      confidence: 1.0, 
+    };
+
+    setAppData(prev => ({ 
+      ...prev, 
+      currentMode: 'quick', 
+      consentSkipped: false, 
+      vehicleInfo: quickStartVehicleInfo 
+    }));
+    
+    setKioskState('DATA_CONSENT'); 
+  };
+
+  const handleProceedFromFullScreenCamera = useCallback(() => {
+    setKioskState('INITIAL_WELCOME');
+  }, []);
+  
+  // This function might be vestigial if FullScreenCameraView handles initial scan and data passing.
+  // For now, it's kept as a potential handler if scan data comes from elsewhere.
+  const handleCameraScanComplete = useCallback(() => {
+    const scannedVehicleInfo: VehicleInfo = {
+      ...MOCK_VEHICLE_DATA,
+      licensePlate: `AI-${Math.floor(Math.random() * 9000) + 1000}`, 
+      confidence: 0.98,
+    };
+
+    setAppData(prev => ({
+      ...prev,
+      vehicleInfo: scannedVehicleInfo,
+    }));
+
+    console.log('Firebase Log (simulated): camera_scan_complete (generic handler), vehicle_plate:', scannedVehicleInfo.licensePlate, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
+    
+    setKioskState('DATA_CONSENT');
+  }, [appData.language, t]);
+
+
+  const handleProceedFromInitialWelcome = () => {
+    clearGeneralTimer();
+    setAppData(prev => ({ ...prev, currentMode: 'standard' }));
+
+    // Simulate vehicle scan data here, as LiveCameraFeedScreen is removed
+    const scannedVehicleInfo: VehicleInfo = {
+      ...MOCK_VEHICLE_DATA,
+      licensePlate: `AI-STD-${Math.floor(Math.random() * 9000) + 1000}`, 
+      confidence: 0.98, // Simulate a good scan for standard mode
+    };
+
+    setAppData(prev => ({
+      ...prev,
+      vehicleInfo: scannedVehicleInfo,
+    }));
+
+    console.log('Firebase Log (simulated): standard_mode_scan_simulated, vehicle_plate:', scannedVehicleInfo.licensePlate, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
+    
+    setKioskState('DATA_CONSENT'); // Standard flow proceeds directly to Data Consent
+  };
+
+  const handleConsentAgree = () => {
+    setDisagreeTapCount(0);
+    setAppData(prev => ({ ...prev, consentSkipped: false }));
+    console.log('Firebase Log (simulated): consent_agreed, mode:', appData.currentMode, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
+    setKioskState('WELCOME'); 
+  };
+
+ const handleConsentDisagree = () => {
+    const currentMode = appData.currentMode;
+    if (disagreeTapCount === 0) {
+        setDisagreeTapCount(1);
+        if (currentMode === 'quick') {
+            toast({
+                title: t('quickMode.disagreeWarning.title'),
+                description: t('quickMode.disagreeWarning.description'),
+                variant: "destructive",
+                duration: 7000,
+            });
+            console.log('Firebase Log (simulated): quick_mode_consent_disagree_first_tap, timestamp:', new Date().toISOString(), 'language:', appData.language);
+        } else { 
+            toast({
+                title: t('dataConsent.toast.disagreeWarning.title'),
+                description: t('dataConsent.toast.disagreeWarning.description'),
+                variant: "destructive",
+                duration: 7000,
+            });
+            console.log('Firebase Log (simulated): standard_mode_consent_disagree_first_tap, timestamp:', new Date().toISOString(), 'language:', appData.language);
+        }
+    } else { 
+        if (currentMode === 'quick') {
+            setAppData(prev => ({ 
+              ...prev, 
+              vehicleInfo: null, 
+              consentSkipped: true, 
+              currentMode: 'standard' 
+            }));
+            console.log('Firebase Log (simulated): quick_mode_consent_disagreed_fully_switch_to_manual, timestamp:', new Date().toISOString(), 'language:', appData.language);
+            toast({
+                title: t('dataConsent.toast.consentSkipped.title'),
+                description: t('dataConsent.toast.consentSkipped.description'),
+                duration: 5000,
+            });
+            setKioskState('SELECT_CAR_BRAND'); 
+        } else { 
+            setAppData(prev => ({ ...prev, consentSkipped: true, currentMode: 'standard' }));
+            console.log('Firebase Log (simulated): consent_skipped_proceed_manual (standard_forced), timestamp:', new Date().toISOString(), 'language:', appData.language);
+            toast({
+                title: t('dataConsent.toast.consentSkipped.title'),
+                description: t('dataConsent.toast.consentSkipped.description'),
+                duration: 5000,
+            });
+            setKioskState('SELECT_CAR_BRAND'); 
+        }
+        setDisagreeTapCount(0); 
+    }
+};
+
+  const handleBrandSelected = useCallback((brandId: string) => {
+    const brand = MOCK_CAR_BRANDS.find(b => b.id === brandId);
+    setAppData(prev => ({ ...prev, selectedBrandId: brandId }));
+    const brandName = brand ? t(brand.name) : brandId;
+    console.log('Firebase Log (simulated): brand_selected, brand:', brandName, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
+    toast({
+      title: t('selectCarBrand.toast.brandSelected.title'),
+      description: t('selectCarBrand.toast.brandSelected.description', { brandName }),
+      duration: 3000,
+    });
+    setKioskState('SELECT_CAR_MODEL');
+  }, [appData.language, t, toast]);
+
+  const handleModelSelected = useCallback((modelInfo: Partial<VehicleInfo>) => {
+    const modelName = modelInfo.model ? t(modelInfo.model) : t('selectCarModel.unknownModel');
+    console.log('Firebase Log (simulated): model_selected, model:', modelName, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
+    toast({
+      title: t('selectCarModel.toast.modelSelected.title'),
+      description: t('selectCarModel.toast.modelSelected.description', { modelName }),
+      duration: 3000,
+    });
+
+    let recommendedConnector: string | undefined = modelInfo.recommendedConnectorType;
+
+    if (appData.selectedBrandId) {
+      switch (appData.selectedBrandId) {
+        case 'hyundai':
+        case 'kia':
+        case 'tesla':
+        case 'kgm':
+          recommendedConnector = 'ccs_combo_2';
+          break;
+        default:
+          recommendedConnector = 'ccs_combo_2';
+      }
+    }
+
+    setAppData(prev => ({
+      ...prev,
+      vehicleInfo: {
+        licensePlate: modelInfo.licensePlate || t('selectCarModel.manualEntryLicensePlate'),
+        model: modelInfo.model || 'selectCarModel.unknownModel',
+        confidence: modelInfo.confidence || 1.0,
+        portLocationDescription: modelInfo.portLocationDescription || "selectCarModel.portLocationGeneric",
+        connectionImageUrl: modelInfo.connectionImageUrl || 'https://placehold.co/600x400.png',
+        dataAiHint: modelInfo.dataAiHint || "electric vehicle",
+        recommendedConnectorType: recommendedConnector,
+      },
+    }));
+    setKioskState('PRE_PAYMENT_AUTH');
+  }, [appData.selectedBrandId, appData.language, t, toast]);
+
+  const handleVehicleConfirmed = useCallback((confirmedVehicleInfo: VehicleInfo) => {
+    setAppData(prev => ({ ...prev, vehicleInfo: confirmedVehicleInfo }));
+    console.log('Firebase Log (simulated): vehicle_confirmed, mode:', appData.currentMode, 'license_plate:', confirmedVehicleInfo.licensePlate, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
+    setKioskState('PRE_PAYMENT_AUTH');
+  }, [appData.currentMode, appData.language]);
+
+  const handlePaymentAuthSuccess = useCallback(() => {
+    toast({
+      title: t('prePaymentAuth.toast.success.title'),
+      description: t('prePaymentAuth.toast.success.description_select_connector'),
+      duration: 3000,
+    });
+    console.log('Firebase Log (simulated): payment_auth_success, timestamp:', new Date().toISOString(), 'language:', appData.language);
+
+    let currentAssignedSlotId = appData.assignedSlotId;
+    if (!currentAssignedSlotId) {
+        const availableSlot = appData.currentSlots.find(s => s.status === 'available');
+        if (availableSlot) {
+            currentAssignedSlotId = availableSlot.id;
+            setAppData(prev => ({...prev, assignedSlotId: availableSlot.id}));
+        } else {
+            setKioskState('QUEUE');
+            return;
+        }
+    }
+
+    setKioskState('SELECT_CONNECTOR_TYPE');
+
+  }, [appData.assignedSlotId, appData.currentSlots, appData.language, t, toast]);
+
+  const handleConnectorTypeSelected = useCallback((connectorTypeId: string) => {
+    setAppData(prev => ({ ...prev, selectedConnectorType: connectorTypeId }));
+    const connector = MOCK_AVAILABLE_CONNECTORS.find(c => c.id === connectorTypeId);
+    const connectorName = connector ? t(connector.name) : connectorTypeId;
+    console.log('Firebase Log (simulated): connector_selected, mode:', appData.currentMode, 'connector:', connectorName, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
+    setKioskState('INITIAL_PROMPT_CONNECT');
+  }, [appData.currentMode, appData.language, t]);
+
+  const handleChargerConnected = useCallback(() => {
+    setKioskState('DETECTING_CONNECTION');
+  }, []);
+
+  const handleStartChargingConfirmed = useCallback(() => {
+    if (appData.assignedSlotId && appData.vehicleInfo && appData.selectedConnectorType) {
+      const updatedSlots = appData.currentSlots.map(s =>
+        s.id === appData.assignedSlotId
+        ? { ...s, status: 'occupied' as 'occupied', vehicle: appData.vehicleInfo!, user: appData.vehicleInfo!.licensePlate, currentChargeKW: 0, estimatedCompletionTime: t('waitTimeDisplay.calculating') }
+        : s
+      );
+      setAppData(prev => ({ ...prev, currentSlots: updatedSlots }));
+      console.log('Firebase Log (simulated): charging_started, mode:', appData.currentMode, 'slot:', appData.assignedSlotId, 'connector:', appData.selectedConnectorType, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
+      setKioskState('CHARGING_IN_PROGRESS');
+    } else {
+      toast({ title: t('toast.error.noSlotInfo.title'), description: t('toast.error.noSlotInfo.description'), variant: "destructive" });
+      resetToInitialWelcome();
+    }
+  }, [appData.assignedSlotId, appData.vehicleInfo, appData.selectedConnectorType, appData.currentSlots, appData.currentMode, appData.language, t, toast, resetToInitialWelcome]);
+
+  const handleConnectionDetected = useCallback(() => {
+    if (appData.currentMode === 'quick' && !appData.consentSkipped) {
+      toast({ title: t('detectConnection.quickModeAutoStart') });
+      console.log('Firebase Log (simulated): quick_mode_charging_auto_start, timestamp:', new Date().toISOString(), 'language:', appData.language);
+      setTimeout(() => handleStartChargingConfirmed(), 0);
+    } else {
+      setKioskState('CONFIRM_START_CHARGING');
+    }
+  }, [appData.currentMode, appData.consentSkipped, appData.language, t, toast, handleStartChargingConfirmed]);
+
+
+  const handleChargingStoppedOrCompleted = useCallback((bill: BillDetails) => {
+    if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(CHARGING_PROGRESS_STORAGE_KEY);
+    }
+    setAppData(prev => ({ ...prev, finalBill: bill }));
+    if (appData.assignedSlotId) {
+      const updatedSlots = appData.currentSlots.map(s =>
+        s.id === appData.assignedSlotId
+        ? { ...s, status: 'available' as 'available', vehicle: undefined, user: undefined, currentChargeKW: undefined, estimatedCompletionTime: undefined }
+        : s
+      );
+      const isOtherWaiting = updatedSlots.some(s => s.status === 'occupied'); 
+      setAppData(prev => ({ ...prev, currentSlots: updatedSlots, isQueueNotEmpty: isOtherWaiting }));
+    }
+    console.log('Firebase Log (simulated): charging_completed, mode:', appData.currentMode, 'slot:', appData.assignedSlotId, 'bill_total:', bill.totalCost, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
+    setKioskState('CHARGING_COMPLETE_PAYMENT');
+  }, [appData.assignedSlotId, appData.currentSlots, appData.currentMode, appData.language]);
+
+  const handlePaymentProcessed = useCallback((receiptChoice: 'sms' | 'none') => {
+     setAppData(prev => ({ ...prev, receiptPreference: receiptChoice }));
+     if (receiptChoice === 'sms') {
+      toast({ title: t('payment.toast.smsDemo.title'), description: t('payment.toast.smsDemo.description') });
+    }
+    console.log('Firebase Log (simulated): payment_processed, mode:', appData.currentMode, 'receipt:', receiptChoice, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
+    if (appData.isQueueNotEmpty) { 
+        setKioskState('VACATE_SLOT_REMINDER');
+    } else {
+        setKioskState('THANK_YOU');
+    }
+  }, [appData.currentMode, appData.isQueueNotEmpty, appData.language, t, toast]);
+
+  const handleSimulateChargingError = useCallback((_errorMessageKey: string) => {
+    if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(CHARGING_PROGRESS_STORAGE_KEY);
+    }
+    setAppData(prev => ({ ...prev, chargingErrorMessage: t(_errorMessageKey) }));
+    setKioskState('CHARGING_ERROR');
+    console.log('Firebase Log (user_action): "Charger Connection Error" button pressed, navigating to error screen. Timestamp:', new Date().toISOString(), 'language:', appData.language);
+  }, [appData.language, t]);
+
+  const handleChargingErrorRetry = useCallback(() => {
+    setAppData(prev => ({ ...prev, chargingErrorMessage: null }));
+    if (appData.currentMode === 'quick') {
+        resetToInitialWelcome(); 
+    } else {
+        setKioskState('SELECT_CONNECTOR_TYPE');
+    }
+  }, [appData.currentMode, resetToInitialWelcome]);
+
+
+  const renderKioskScreen = () => {
+    const screenProps = { lang: appData.language, t, onLanguageSwitch: handleLanguageSwitch };
+    switch (kioskState) {
+      case 'PRE_PROCESSING_CAMERA_FEED':
+        return <FullScreenCameraView {...screenProps} onProceedWithoutCamera={handleProceedFromFullScreenCamera} />;
+      case 'INITIAL_WELCOME':
+        return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+      // case 'LIVE_CAMERA_FEED': // Removed this case
+      //   return <LiveCameraFeedScreen {...screenProps} onScanComplete={handleCameraScanComplete} />;
+      case 'DATA_CONSENT':
+        return <DataConsentScreen {...screenProps} onAgree={handleConsentAgree} onDisagree={handleConsentDisagree} disagreeTapCount={disagreeTapCount} />;
+      case 'SELECT_CAR_BRAND':
+        return <SelectCarBrandScreen {...screenProps} brands={MOCK_CAR_BRANDS} onBrandSelect={handleBrandSelected} onCancel={resetToInitialWelcome} />;
+      case 'SELECT_CAR_MODEL':
+        const selectedBrand = MOCK_CAR_BRANDS.find(b => b.id === appData.selectedBrandId);
+        return <SelectCarModelScreen {...screenProps} brand={selectedBrand} onModelSelect={handleModelSelected} onCancel={() => setKioskState('SELECT_CAR_BRAND')} />;
+      case 'WELCOME':
+        return <WelcomeScreen {...screenProps} quickMode={appData.currentMode === 'quick' && !appData.consentSkipped} />;
+      case 'VEHICLE_CONFIRMATION':
+        if (!appData.vehicleInfo) {
+             console.warn("Missing vehicleInfo for VEHICLE_CONFIRMATION. Resetting.");
+             resetToInitialWelcome();
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+        }
+        return <VehicleConfirmationScreen {...screenProps} vehicleInfo={appData.vehicleInfo} onConfirm={handleVehicleConfirmed} />;
+      case 'PRE_PAYMENT_AUTH':
+        return <PrePaymentAuthScreen {...screenProps} onAuthSuccess={handlePaymentAuthSuccess} onCancel={resetToInitialWelcome} />;
+      case 'SELECT_CONNECTOR_TYPE':
+        return <SelectConnectorTypeScreen {...screenProps} vehicleInfo={appData.vehicleInfo} availableConnectors={MOCK_AVAILABLE_CONNECTORS} onConnectorSelect={handleConnectorTypeSelected} onCancel={resetToInitialWelcome} />;
+      case 'INITIAL_PROMPT_CONNECT':
+        if (!appData.vehicleInfo || !appData.assignedSlotId) {
+             console.warn("Missing vehicle or slot info for INITIAL_PROMPT_CONNECT. Handling...");
+             if (!appData.assignedSlotId) { 
+                setKioskState(appData.currentSlots.find(s => s.status === 'available') ? 'SELECT_CONNECTOR_TYPE' : 'QUEUE');
+                return <SlotAssignmentScreen {...screenProps} isQueue={!appData.currentSlots.some(s => s.status === 'available')}/>; 
+             }
+             resetToInitialWelcome();
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+        }
+        return <InitialPromptConnectScreen {...screenProps} vehicleInfo={appData.vehicleInfo} slotNumber={appData.assignedSlotId} onChargerConnected={handleChargerConnected} />;
+      case 'DETECTING_CONNECTION':
+        if (!appData.vehicleInfo) { 
+             console.warn("Missing vehicle info for DETECTING_CONNECTION, showing SlotAssignment.");
+             resetToInitialWelcome(); 
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+        }
+        return <DetectConnectionScreen {...screenProps} vehicleModelKey={appData.vehicleInfo.model} onDetectionComplete={handleConnectionDetected} />;
+      case 'CONFIRM_START_CHARGING':
+        return <ConfirmStartChargingScreen {...screenProps} onStart={handleStartChargingConfirmed} onCancel={resetToInitialWelcome} />;
+      case 'CHARGING_IN_PROGRESS':
+        if (!appData.assignedSlotId || !appData.selectedConnectorType || !appData.vehicleInfo) {
+          toast({ title: t('toast.error.noSlotInfo.title'), description: t('toast.error.noSlotInfo.description'), variant: "destructive" });
+          resetToInitialWelcome();
+          return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+        }
+        return <ChargingInProgressScreen
+                  {...screenProps}
+                  slotNumber={appData.assignedSlotId}
+                  selectedConnectorType={appData.selectedConnectorType}
+                  initialBill={{ kwhUsed: 0, durationMinutes: 0, totalCost: 0 }} 
+                  estimatedTotalTimeMinutes={30} 
+                  onStopCharging={handleChargingStoppedOrCompleted}
+                  onChargingComplete={handleChargingStoppedOrCompleted}
+                  onSimulateError={handleSimulateChargingError}
+                  allSlots={appData.currentSlots}
+               />;
+      case 'CHARGING_COMPLETE_PAYMENT':
+         if (!appData.finalBill) {
+             console.error("Final bill is null in CHARGING_COMPLETE_PAYMENT state. Resetting.");
+             toast({ title: t('error.genericTitle'), description: "Error processing payment details.", variant: "destructive" });
+             resetToInitialWelcome();
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+         }
+        return <PaymentScreen {...screenProps} bill={appData.finalBill} onPaymentProcessed={handlePaymentProcessed} />;
+      case 'VACATE_SLOT_REMINDER':
+        return <VacateSlotReminderScreen {...screenProps} onDismiss={resetToInitialWelcome} isQueueNotEmpty={appData.isQueueNotEmpty} />;
+      case 'THANK_YOU':
+        return <ThankYouScreen {...screenProps} receiptType={appData.receiptPreference} onNewSession={resetToInitialWelcome} />;
+      case 'QUEUE':
+        return <QueueScreen {...screenProps} queuePosition={1} estimatedWaitTimeKey="queue.defaultWaitTime" onCancel={resetToInitialWelcome} />;
+      case 'CHARGING_ERROR':
+        return <ChargingErrorScreen {...screenProps} errorMessage={appData.chargingErrorMessage} onRetry={handleChargingErrorRetry} onCancel={resetToInitialWelcome} />;
+      case 'SCANNING': 
+      case 'ASSIGNING_SLOT': 
+        return <SlotAssignmentScreen {...screenProps} isQueue={!appData.currentSlots.some(s => s.status === 'available')} />;
+      default:
+        console.warn('Unhandled kiosk state: ' + kioskState + ', resetting to initial welcome.');
+        resetToInitialWelcome(); 
+        return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+    }
+  };
+
+  return (
+    <main className="w-screen h-screen overflow-hidden bg-card text-card-foreground">
+      {renderKioskScreen()}
+    </main>
+  );
+}
+
+    
