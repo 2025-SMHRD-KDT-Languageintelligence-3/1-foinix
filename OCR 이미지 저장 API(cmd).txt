@@ -1,0 +1,18 @@
+# 프로젝트 폴더로 이동 (예시)
+cd C:\Users\YourUser\Documents\my_license_plate_project
+
+# 가상 환경 생성
+python -m venv venv
+
+# 가상 환경 활성화
+# Windows
+.\venv\Scripts\activate
+
+pip install ultralytics
+pip install easyocr
+pip install mysql-connector-python
+pip install opencv-python
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu 
+pip install ipykernel
+python -m ipykernel install --user --name my_project_env --display-name "My License Plate Project"
+python your_script_name.py
