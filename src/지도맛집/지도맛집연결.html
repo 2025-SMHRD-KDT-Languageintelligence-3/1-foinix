@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>🍽️ 맛집 지도</title>
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=d279fab7c4c514343dfae8a9c5b09303&autoload=false&libraries=services"></script>
+  <style>
+    body { margin: 60px 0; font-family: 'Segoe UI', sans-serif; }
+    #search-box {
+      width: 880px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    #search-box input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+    }
+    #search-box button {
+      padding: 10px 20px;
+      background-color: #6c5ce7;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .category-buttons {
+      width: 880px;
+      margin: 15px auto 0;
+      display: flex;
+      justify-content: space-between;
+    }
+    .category-btn {
+      flex: 1;
+      margin: 0 4px;
+      padding: 10px 0;
+      border-radius: 20px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #map {
+      width: 880px;
+      height: 600px;
+      margin: 20px auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #recommendation-wrapper {
+      max-width: 920px;
+      margin: 60px auto;
+      background: #f9f9f9;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    #recommendation-title {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    #recommendation {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: nowrap;
+    }
+    .card {
+      width: 260px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 16px;
+    }
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+    .card p {
+      margin: 6px 0;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div id="search-box">
+    <input type="text" id="keyword" placeholder="지역명(예: 서울 강남)" />
+    <button onclick="searchPlaces()">검색</button>
+  </div>
+
+  <div class="category-buttons">
+    <button class="category-btn" style="background:#e74c3c;color:white" onclick="setCategory('FD6')">🍴 식당</button>
+    <button class="category-btn" style="background:#f39c12;color:white" onclick="setCategory('CE7')">☕ 카페</button>
+    <button class="category-btn" style="background:#3498db;color:white" onclick="setCategory('CS2')">🏪 편의점</button>
+    <button class="category-btn" style="background:#27ae60;color:white" onclick="setCategory('공원')">🌳 공원</button>
+    <button class="category-btn" style="background:#2ecc71;color:white" onclick="setCategory('PK6')">🅿️ 주차장</button>
+  </div>
+
+  <div id="map"></div>
+
+  <div id="recommendation-wrapper">
+    <div id="recommendation-title">추천 편의시설</div>
+    <div id="recommendation"></div>
+  </div>
+
+  <script>
+    let map, infowindow;
+    let markers = [], circles = [], clickCounts = {}, markerInfoMap = {};
+    let currentCategory = 'FD6';
+
+    const colors = {
+      FD6: '#e74c3c', CE7: '#f39c12', CS2: '#3498db', '공원': '#27ae60', PK6: '#2ecc71'
+    };
+    const icons = {
+      FD6: '🍴', CE7: '☕', CS2: '🏪', '공원': '🌳', PK6: '🅿️'
+    };
+
+    kakao.maps.load(() => {
+      map = new kakao.maps.Map(document.getElementById('map'), {
+        center: new kakao.maps.LatLng(37.5665, 126.9780), level: 5
+      });
+    });
+
+    function setCategory(cat) {
+      currentCategory = cat;
+      searchPlaces();
+    }
+
+    function searchPlaces() {
+      const keyword = document.getElementById('keyword').value;
+      if (!keyword) return alert('지역명을 입력하세요');
+
+      const geocoder = new kakao.maps.services.Geocoder();
+      geocoder.addressSearch(keyword, (result, status) => {
+        if (status === kakao.maps.services.Status.OK) {
+          const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+          map.setCenter(coords);
+          clearMapObjects();
+
+          const ps = new kakao.maps.services.Places();
+          const callback = (data, status) => {
+            if (status === kakao.maps.services.Status.OK) {
+              data.forEach(place => displayPlace(place, coords));
+            }
+          };
+
+          if (currentCategory === '공원') {
+            ps.keywordSearch(keyword + ' 공원', callback, { location: coords, radius: 5000 });
+          } else {
+            ps.categorySearch(currentCategory, callback, { location: coords, radius: 3000 });
+          }
+        }
+      });
+    }
+
+    function displayPlace(place, center) {
+      const pos = new kakao.maps.LatLng(place.y, place.x);
+      const marker = new kakao.maps.Marker({ map, position: pos, title: place.place_name });
+      markers.push(marker);
+
+      const circle = new kakao.maps.Circle({
+        map, center: pos, radius: 40,
+        strokeWeight: 2, strokeColor: colors[currentCategory],
+        strokeOpacity: 0.8, fillColor: colors[currentCategory], fillOpacity: 0.5
+      });
+      circles.push(circle);
+
+      markerInfoMap[place.id] = { place, type: currentCategory };
+
+      kakao.maps.event.addListener(marker, 'click', () => {
+        if (infowindow) infowindow.close();
+        infowindow = new kakao.maps.InfoWindow({
+          content: `<div style="padding:8px;"><strong>${place.place_name}</strong><br>${place.road_address_name || place.address_name}<br>${place.phone || ''}</div>`
+        });
+        infowindow.open(map, marker);
+        clickCounts[place.id] = (clickCounts[place.id] || 0) + 1;
+        updateRecommendations();
+        speak(place.place_name);
+      });
+    }
+
+    function updateRecommendations() {
+      const sorted = Object.entries(clickCounts).sort((a,b)=>b[1]-a[1]).slice(0,3);
+      const container = document.getElementById("recommendation");
+      container.innerHTML = '';
+
+      sorted.forEach(([key, count]) => {
+        const info = markerInfoMap[key];
+        if (!info) return;
+        const { place, type } = info;
+        const icon = icons[type] || '📍';
+        container.innerHTML += `
+          <div class="card">
+            <h3>${icon} ${place.place_name}</h3>
+            <p>📍 ${place.road_address_name || place.address_name}</p>
+            <p>📞 ${place.phone || '전화번호 없음'}</p>
+            <p>🔥 클릭 횟수: ${count}</p>
+          </div>`;
+      });
+    }
+
+    function clearMapObjects() {
+      markers.forEach(m => m.setMap(null));
+      circles.forEach(c => c.setMap(null));
+      markers = [];
+      circles = [];
+      if (infowindow) infowindow.close();
+    }
+
+    function speak(text) {
+      const msg = new SpeechSynthesisUtterance(text);
+      msg.lang = 'ko-KR';
+      speechSynthesis.speak(msg);
+    }
+  </script>
+</body>
+</html>
