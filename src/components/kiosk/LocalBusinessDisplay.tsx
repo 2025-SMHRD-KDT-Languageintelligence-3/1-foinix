@@ -3,17 +3,18 @@
 
 import type { LocalBusiness } from '@/types/kiosk';
 import { LocalBusinessCard } from './LocalBusinessCard';
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Map } from 'lucide-react';
 import type { Language, t as TFunction } from '@/lib/translations';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
-interface LocalBusinessDisplayProps {
-  businesses?: LocalBusiness[];
+interface Props { // Renamed from LocalBusinessDisplayProps
+  businesses?: LocalBusiness[]; // Kept existing prop
   lang: Language;
   t: typeof TFunction;
+  from?: 'charging' | 'vacate-reminder';
 }
 
 const mockBusinessesData: Omit<LocalBusiness, 'name' | 'type' | 'description' | 'distance'> & { nameKey: string; typeKey: string; descriptionKey: string; distanceKey: string }[] = [
@@ -25,7 +26,7 @@ const mockBusinessesData: Omit<LocalBusiness, 'name' | 'type' | 'description' | 
 
 const BUSINESSES_PER_PAGE = 3;
 
-export function LocalBusinessDisplay({ businesses, lang, t }: LocalBusinessDisplayProps) {
+export function LocalBusinessDisplay({ businesses, lang, t, from }: Props) { // Updated to use 'Props'
   const router = useRouter();
   const sourceBusinesses = businesses || mockBusinessesData;
 
@@ -42,12 +43,19 @@ export function LocalBusinessDisplay({ businesses, lang, t }: LocalBusinessDispl
   const displayedBusinesses = actualBusinesses.slice(0, BUSINESSES_PER_PAGE);
 
   const handleBusinessCardClick = (business: LocalBusiness) => {
-    router.push(`/store-map?businessId=${business.id}`);
+    const query =
+      typeof from === 'string'
+        ? `?from=${from}&businessId=${business.id}`
+        : `?businessId=${business.id}`;
+    router.push(`/store-map${query}`);
   };
+  
 
   const handleShowAllOnMap = () => {
-    router.push('/store-map');
+    const query = typeof from === 'string' ? `?from=${from}` : '';
+    router.push(`/store-map${query}`);
   };
+  
 
   return (
     <div className="w-full">

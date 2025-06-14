@@ -99,6 +99,9 @@ export type KioskState =
   | 'SELECT_CAR_MODEL'
   | 'CHARGING_ERROR';
 
+// OperatingMode might be simplified if 'quick' is fully removed.
+// For now, keeping it to see if any other logic path might use a different mode.
+// If 'standard' becomes the only mode, this type can be removed and appData.currentMode too.
 export type OperatingMode = 'standard' | 'quick';
 
 export interface AppData {
@@ -110,9 +113,9 @@ export interface AppData {
   finalBill: BillDetails | null;
   receiptPreference?: 'sms' | 'none';
   isQueueNotEmpty?: boolean;
-  consentSkipped?: boolean; // True if user explicitly skipped consent in standard mode
+  consentSkipped?: boolean; 
   selectedBrandId?: string | null;
   language: Language;
-  currentMode: OperatingMode;
+  currentMode: OperatingMode; // Defaults to 'standard'
   chargingErrorMessage: string | null;
 }

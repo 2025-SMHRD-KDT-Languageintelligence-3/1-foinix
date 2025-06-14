@@ -98,7 +98,7 @@ const MOCK_INITIAL_APP_DATA: AppData = {
   consentSkipped: false,
   selectedBrandId: null,
   language: 'ko',
-  currentMode: 'standard',
+  currentMode: 'standard', // Default to standard as quick start button is removed
   chargingErrorMessage: null,
 };
 
@@ -126,6 +126,9 @@ export default function KioskPage() {
     clearGeneralTimer();
     if (typeof window !== 'undefined') {
         sessionStorage.removeItem(CHARGING_PROGRESS_STORAGE_KEY);
+        localStorage.removeItem('kioskNextState');
+        localStorage.removeItem('kioskFinalBill');
+        localStorage.removeItem('kioskChargingErrorMessage');
     }
     const freshSlots = MOCK_SLOTS_DATA.map(s => {
         if (s.id === 'A2' && s.status === 'occupied') {
@@ -156,9 +159,37 @@ export default function KioskPage() {
     }
   }, [appData.language, t]);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const nextState = localStorage.getItem('kioskNextState');
+      const finalBillString = localStorage.getItem('kioskFinalBill');
+      const chargingErrorMsg = localStorage.getItem('kioskChargingErrorMessage');
+
+      if (nextState === 'CHARGING_COMPLETE_PAYMENT' && finalBillString) {
+        try {
+          const finalBill: BillDetails = JSON.parse(finalBillString);
+          setAppData(prev => ({ ...prev, finalBill, chargingErrorMessage: null }));
+          setKioskState('CHARGING_COMPLETE_PAYMENT');
+        } catch (error) {
+          console.error("Error parsing finalBill from localStorage:", error);
+          resetToInitialWelcome(); 
+        } finally {
+          localStorage.removeItem('kioskNextState');
+          localStorage.removeItem('kioskFinalBill');
+          localStorage.removeItem('kioskChargingErrorMessage'); 
+        }
+      } else if (nextState === 'CHARGING_ERROR' && chargingErrorMsg) {
+        setAppData(prev => ({ ...prev, finalBill: null, chargingErrorMessage: chargingErrorMsg }));
+        setKioskState('CHARGING_ERROR');
+        localStorage.removeItem('kioskNextState');
+        localStorage.removeItem('kioskFinalBill');
+        localStorage.removeItem('kioskChargingErrorMessage');
+      }
+    }
+  }, [resetToInitialWelcome]); 
+
 
   useEffect(() => {
-    // This timer is for WELCOME state transitions
     if (kioskState === 'WELCOME' && appData.currentMode === 'standard') {
       clearGeneralTimer();
       generalTimerRef.current = setTimeout(async () => {
@@ -174,17 +205,11 @@ export default function KioskPage() {
         setKioskState('VEHICLE_CONFIRMATION');
       }, 1500);
     }
-    else if (kioskState === 'WELCOME' && appData.currentMode === 'quick' && appData.vehicleInfo) {
-      clearGeneralTimer();
-      generalTimerRef.current = setTimeout(() => {
-        setKioskState('VEHICLE_CONFIRMATION');
-      }, 1500);
-    }
+    // Removed 'quick' mode logic as the button is removed.
     return () => clearGeneralTimer();
   }, [kioskState, appData.currentMode, appData.vehicleInfo, clearGeneralTimer, t]);
 
 
-  // useEffect for automatic reset from THANK_YOU and VACATE_SLOT_REMINDER states
   useEffect(() => {
     let specificResetTimer: NodeJS.Timeout | null = null;
 
@@ -235,32 +260,11 @@ export default function KioskPage() {
     }));
   }, []);
   
-  const handleQuickStart = () => {
-    clearGeneralTimer();
-    console.log('Firebase Log (simulated): mode_selected_intent, mode: quick, timestamp:', new Date().toISOString(), 'language:', appData.language);
-    
-    const quickStartVehicleInfo: VehicleInfo = {
-      ...MOCK_VEHICLE_DATA, 
-      licensePlate: `${t('selectCarModel.manualEntryLicensePlate')}-QS-${Math.floor(Math.random() * 900) + 100}`, 
-      confidence: 1.0, 
-    };
-
-    setAppData(prev => ({ 
-      ...prev, 
-      currentMode: 'quick', 
-      consentSkipped: false, 
-      vehicleInfo: quickStartVehicleInfo 
-    }));
-    
-    setKioskState('DATA_CONSENT'); 
-  };
 
   const handleProceedFromFullScreenCamera = useCallback(() => {
     setKioskState('INITIAL_WELCOME');
   }, []);
   
-  // This function might be vestigial if FullScreenCameraView handles initial scan and data passing.
-  // For now, it's kept as a potential handler if scan data comes from elsewhere.
   const handleCameraScanComplete = useCallback(() => {
     const scannedVehicleInfo: VehicleInfo = {
       ...MOCK_VEHICLE_DATA,
@@ -276,18 +280,17 @@ export default function KioskPage() {
     console.log('Firebase Log (simulated): camera_scan_complete (generic handler), vehicle_plate:', scannedVehicleInfo.licensePlate, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
     
     setKioskState('DATA_CONSENT');
-  }, [appData.language, t]);
+  }, [appData.language]);
 
 
   const handleProceedFromInitialWelcome = () => {
     clearGeneralTimer();
     setAppData(prev => ({ ...prev, currentMode: 'standard' }));
 
-    // Simulate vehicle scan data here, as LiveCameraFeedScreen is removed
     const scannedVehicleInfo: VehicleInfo = {
       ...MOCK_VEHICLE_DATA,
       licensePlate: `AI-STD-${Math.floor(Math.random() * 9000) + 1000}`, 
-      confidence: 0.98, // Simulate a good scan for standard mode
+      confidence: 0.98, 
     };
 
     setAppData(prev => ({
@@ -297,7 +300,7 @@ export default function KioskPage() {
 
     console.log('Firebase Log (simulated): standard_mode_scan_simulated, vehicle_plate:', scannedVehicleInfo.licensePlate, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
     
-    setKioskState('DATA_CONSENT'); // Standard flow proceeds directly to Data Consent
+    setKioskState('DATA_CONSENT'); 
   };
 
   const handleConsentAgree = () => {
@@ -308,51 +311,25 @@ export default function KioskPage() {
   };
 
  const handleConsentDisagree = () => {
-    const currentMode = appData.currentMode;
+    // Since quick mode is removed, only standard mode logic applies here.
     if (disagreeTapCount === 0) {
         setDisagreeTapCount(1);
-        if (currentMode === 'quick') {
-            toast({
-                title: t('quickMode.disagreeWarning.title'),
-                description: t('quickMode.disagreeWarning.description'),
-                variant: "destructive",
-                duration: 7000,
-            });
-            console.log('Firebase Log (simulated): quick_mode_consent_disagree_first_tap, timestamp:', new Date().toISOString(), 'language:', appData.language);
-        } else { 
-            toast({
-                title: t('dataConsent.toast.disagreeWarning.title'),
-                description: t('dataConsent.toast.disagreeWarning.description'),
-                variant: "destructive",
-                duration: 7000,
-            });
-            console.log('Firebase Log (simulated): standard_mode_consent_disagree_first_tap, timestamp:', new Date().toISOString(), 'language:', appData.language);
-        }
+        toast({
+            title: t('dataConsent.toast.disagreeWarning.title'),
+            description: t('dataConsent.toast.disagreeWarning.description'),
+            variant: "destructive",
+            duration: 7000,
+        });
+        console.log('Firebase Log (simulated): standard_mode_consent_disagree_first_tap, timestamp:', new Date().toISOString(), 'language:', appData.language);
     } else { 
-        if (currentMode === 'quick') {
-            setAppData(prev => ({ 
-              ...prev, 
-              vehicleInfo: null, 
-              consentSkipped: true, 
-              currentMode: 'standard' 
-            }));
-            console.log('Firebase Log (simulated): quick_mode_consent_disagreed_fully_switch_to_manual, timestamp:', new Date().toISOString(), 'language:', appData.language);
-            toast({
-                title: t('dataConsent.toast.consentSkipped.title'),
-                description: t('dataConsent.toast.consentSkipped.description'),
-                duration: 5000,
-            });
-            setKioskState('SELECT_CAR_BRAND'); 
-        } else { 
-            setAppData(prev => ({ ...prev, consentSkipped: true, currentMode: 'standard' }));
-            console.log('Firebase Log (simulated): consent_skipped_proceed_manual (standard_forced), timestamp:', new Date().toISOString(), 'language:', appData.language);
-            toast({
-                title: t('dataConsent.toast.consentSkipped.title'),
-                description: t('dataConsent.toast.consentSkipped.description'),
-                duration: 5000,
-            });
-            setKioskState('SELECT_CAR_BRAND'); 
-        }
+        setAppData(prev => ({ ...prev, consentSkipped: true, currentMode: 'standard' }));
+        console.log('Firebase Log (simulated): consent_skipped_proceed_manual, timestamp:', new Date().toISOString(), 'language:', appData.language);
+        toast({
+            title: t('dataConsent.toast.consentSkipped.title'),
+            description: t('dataConsent.toast.consentSkipped.description'),
+            duration: 5000,
+        });
+        setKioskState('SELECT_CAR_BRAND'); 
         setDisagreeTapCount(0); 
     }
 };
@@ -468,14 +445,10 @@ export default function KioskPage() {
   }, [appData.assignedSlotId, appData.vehicleInfo, appData.selectedConnectorType, appData.currentSlots, appData.currentMode, appData.language, t, toast, resetToInitialWelcome]);
 
   const handleConnectionDetected = useCallback(() => {
-    if (appData.currentMode === 'quick' && !appData.consentSkipped) {
-      toast({ title: t('detectConnection.quickModeAutoStart') });
-      console.log('Firebase Log (simulated): quick_mode_charging_auto_start, timestamp:', new Date().toISOString(), 'language:', appData.language);
-      setTimeout(() => handleStartChargingConfirmed(), 0);
-    } else {
-      setKioskState('CONFIRM_START_CHARGING');
-    }
-  }, [appData.currentMode, appData.consentSkipped, appData.language, t, toast, handleStartChargingConfirmed]);
+    // Since quick mode is removed, auto-start logic is simplified or removed.
+    // Assuming standard mode always requires confirmation.
+    setKioskState('CONFIRM_START_CHARGING');
+  }, []);
 
 
   const handleChargingStoppedOrCompleted = useCallback((bill: BillDetails) => {
@@ -513,19 +486,23 @@ export default function KioskPage() {
     if (typeof window !== 'undefined') {
         sessionStorage.removeItem(CHARGING_PROGRESS_STORAGE_KEY);
     }
-    setAppData(prev => ({ ...prev, chargingErrorMessage: t(_errorMessageKey) }));
-    setKioskState('CHARGING_ERROR');
+    const translatedErrorMessage = t(_errorMessageKey);
+    setAppData(prev => ({ ...prev, chargingErrorMessage: translatedErrorMessage }));
+    
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('kioskNextState', 'CHARGING_ERROR');
+        localStorage.setItem('kioskChargingErrorMessage', translatedErrorMessage);
+    }
+    
+    setKioskState('CHARGING_ERROR'); 
     console.log('Firebase Log (user_action): "Charger Connection Error" button pressed, navigating to error screen. Timestamp:', new Date().toISOString(), 'language:', appData.language);
   }, [appData.language, t]);
 
   const handleChargingErrorRetry = useCallback(() => {
     setAppData(prev => ({ ...prev, chargingErrorMessage: null }));
-    if (appData.currentMode === 'quick') {
-        resetToInitialWelcome(); 
-    } else {
-        setKioskState('SELECT_CONNECTOR_TYPE');
-    }
-  }, [appData.currentMode, resetToInitialWelcome]);
+    // Simplified as quick mode is removed. Always go to connector selection.
+    setKioskState('SELECT_CONNECTOR_TYPE');
+  }, [resetToInitialWelcome]);
 
 
   const renderKioskScreen = () => {
@@ -534,9 +511,7 @@ export default function KioskPage() {
       case 'PRE_PROCESSING_CAMERA_FEED':
         return <FullScreenCameraView {...screenProps} onProceedWithoutCamera={handleProceedFromFullScreenCamera} />;
       case 'INITIAL_WELCOME':
-        return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
-      // case 'LIVE_CAMERA_FEED': // Removed this case
-      //   return <LiveCameraFeedScreen {...screenProps} onScanComplete={handleCameraScanComplete} />;
+        return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
       case 'DATA_CONSENT':
         return <DataConsentScreen {...screenProps} onAgree={handleConsentAgree} onDisagree={handleConsentDisagree} disagreeTapCount={disagreeTapCount} />;
       case 'SELECT_CAR_BRAND':
@@ -545,12 +520,12 @@ export default function KioskPage() {
         const selectedBrand = MOCK_CAR_BRANDS.find(b => b.id === appData.selectedBrandId);
         return <SelectCarModelScreen {...screenProps} brand={selectedBrand} onModelSelect={handleModelSelected} onCancel={() => setKioskState('SELECT_CAR_BRAND')} />;
       case 'WELCOME':
-        return <WelcomeScreen {...screenProps} quickMode={appData.currentMode === 'quick' && !appData.consentSkipped} />;
+        return <WelcomeScreen {...screenProps} quickMode={false} />; // quickMode is now always false
       case 'VEHICLE_CONFIRMATION':
         if (!appData.vehicleInfo) {
              console.warn("Missing vehicleInfo for VEHICLE_CONFIRMATION. Resetting.");
              resetToInitialWelcome();
-             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
         }
         return <VehicleConfirmationScreen {...screenProps} vehicleInfo={appData.vehicleInfo} onConfirm={handleVehicleConfirmed} />;
       case 'PRE_PAYMENT_AUTH':
@@ -565,14 +540,14 @@ export default function KioskPage() {
                 return <SlotAssignmentScreen {...screenProps} isQueue={!appData.currentSlots.some(s => s.status === 'available')}/>; 
              }
              resetToInitialWelcome();
-             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
         }
         return <InitialPromptConnectScreen {...screenProps} vehicleInfo={appData.vehicleInfo} slotNumber={appData.assignedSlotId} onChargerConnected={handleChargerConnected} />;
       case 'DETECTING_CONNECTION':
         if (!appData.vehicleInfo) { 
              console.warn("Missing vehicle info for DETECTING_CONNECTION, showing SlotAssignment.");
              resetToInitialWelcome(); 
-             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
         }
         return <DetectConnectionScreen {...screenProps} vehicleModelKey={appData.vehicleInfo.model} onDetectionComplete={handleConnectionDetected} />;
       case 'CONFIRM_START_CHARGING':
@@ -581,7 +556,7 @@ export default function KioskPage() {
         if (!appData.assignedSlotId || !appData.selectedConnectorType || !appData.vehicleInfo) {
           toast({ title: t('toast.error.noSlotInfo.title'), description: t('toast.error.noSlotInfo.description'), variant: "destructive" });
           resetToInitialWelcome();
-          return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+          return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
         }
         return <ChargingInProgressScreen
                   {...screenProps}
@@ -599,7 +574,7 @@ export default function KioskPage() {
              console.error("Final bill is null in CHARGING_COMPLETE_PAYMENT state. Resetting.");
              toast({ title: t('error.genericTitle'), description: "Error processing payment details.", variant: "destructive" });
              resetToInitialWelcome();
-             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
          }
         return <PaymentScreen {...screenProps} bill={appData.finalBill} onPaymentProcessed={handlePaymentProcessed} />;
       case 'VACATE_SLOT_REMINDER':
@@ -616,7 +591,7 @@ export default function KioskPage() {
       default:
         console.warn('Unhandled kiosk state: ' + kioskState + ', resetting to initial welcome.');
         resetToInitialWelcome(); 
-        return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuick={handleQuickStart} />;
+        return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
     }
   };
 
@@ -626,5 +601,3 @@ export default function KioskPage() {
     </main>
   );
 }
-
-    

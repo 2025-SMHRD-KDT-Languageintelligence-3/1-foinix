@@ -24,7 +24,7 @@ export const translations: Record<string, Record<Language, string>> = {
   // === InitialWelcomeScreen ===
   "initialWelcome.title": { ko: "EV이스 키오스크에 오신 것을 환영합니다!", en: "Welcome to EV이스 Kiosk!" },
   "initialWelcome.greeting": { ko: "아래 버튼을 눌러 서비스를 시작하세요.", en: "Press the button below to start the service." },
-  "initialWelcome.proceedButtonStandard": { ko: "서비스 안내 시작 (일반 모드)", en: "Start Service Guide (Standard Mode)" },
+  "initialWelcome.proceedButtonStandard": { ko: "서비스 안내 시작", en: "Start Service Guide" },
   "initialWelcome.proceedButtonQuick": { ko: "빠른 시작", en: "Quick Start" },
 
   // === LiveCameraFeedScreen ===

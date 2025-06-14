@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Handshake, PlayCircle, Zap } from 'lucide-react';
+import { Handshake, PlayCircle } from 'lucide-react';
 import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
@@ -9,13 +9,12 @@ import type { Language, t as TFunction } from '@/lib/translations';
 
 interface InitialWelcomeScreenProps {
   onProceedStandard: () => void;
-  onProceedQuick: () => void;
   lang: Language;
   t: typeof TFunction;
   onLanguageSwitch: () => void;
 }
 
-export function InitialWelcomeScreen({ onProceedStandard, onProceedQuick, lang, t, onLanguageSwitch }: InitialWelcomeScreenProps) {
+export function InitialWelcomeScreen({ onProceedStandard, lang, t, onLanguageSwitch }: InitialWelcomeScreenProps) {
   const languageButton = (
     <Button
       onClick={onLanguageSwitch}
@@ -41,12 +40,6 @@ export function InitialWelcomeScreen({ onProceedStandard, onProceedQuick, lang, 
           onClick={onProceedStandard}
           label={t("initialWelcome.proceedButtonStandard")}
           icon={<PlayCircle />}
-        />
-        <KioskButton
-          onClick={onProceedQuick}
-          label={t("initialWelcome.proceedButtonQuick")}
-          icon={<Zap />}
-          variant="secondary"
         />
       </div>
       {/* Removed the auto-switch message paragraph */}

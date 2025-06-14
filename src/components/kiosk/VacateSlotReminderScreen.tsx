@@ -64,7 +64,7 @@ export function VacateSlotReminderScreen({ onDismiss, lang, t, isQueueNotEmpty, 
         </p>
 
         <div className="w-full max-w-5xl px-4">
-          <LocalBusinessDisplay lang={lang} t={t} />
+          <LocalBusinessDisplay lang={lang} t={t} from="vacate-reminder" />
         </div>
         
         <p className="mt-8 text-lg text-muted-foreground text-center">

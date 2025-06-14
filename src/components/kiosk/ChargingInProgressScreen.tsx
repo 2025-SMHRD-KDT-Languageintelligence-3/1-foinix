@@ -14,7 +14,8 @@ import type { BillDetails, ChargingSlot } from '@/types/kiosk';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { WeatherWidget } from './WeatherWidget';
 import { useEffect, useState, useRef } from 'react';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
+import { t as TFunction } from '@/lib/translations';
 import { cn } from '@/lib/utils';
 
 interface ChargingInProgressScreenProps {
@@ -26,9 +27,13 @@ interface ChargingInProgressScreenProps {
   onSimulateError: (errorMessageKey: string) => void;
   allSlots: ChargingSlot[];
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
   selectedConnectorType: string;
+}
+interface ChargingTipsDisplayProps {
+  lang: Language;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
 const KWH_PER_SECOND = 0.01;
@@ -62,7 +67,7 @@ export function ChargingInProgressScreen({
           return JSON.parse(saved) as StoredChargingState;
         } catch (e) {
           console.error("Failed to parse charging state from sessionStorage", e);
-          sessionStorage.removeItem(SESSION_STORAGE_KEY); // Clear corrupted data
+          sessionStorage.removeItem(SESSION_STORAGE_KEY); 
           return null;
         }
       }
@@ -91,7 +96,7 @@ export function ChargingInProgressScreen({
   });
 
   const chargeIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const finalBillRef = useRef(currentBill); // Initialize with potentially restored bill
+  const finalBillForCompletionRef = useRef(currentBill); 
 
   const onChargingCompleteRef = useRef(onChargingComplete);
   const onStopChargingRef = useRef(onStopCharging);
@@ -109,7 +114,7 @@ export function ChargingInProgressScreen({
     onSimulateErrorRef.current = onSimulateError;
   }, [onSimulateError]);
 
-  // Save state to sessionStorage whenever it changes
+  
   const [isStateLoaded, setIsStateLoaded] = useState(false);
 
   useEffect(() => {
@@ -160,7 +165,7 @@ export function ChargingInProgressScreen({
   }
 
   useEffect(() => {
-    finalBillRef.current = currentBill;
+    finalBillForCompletionRef.current = currentBill;
   }, [currentBill]);
 
   useEffect(() => {
@@ -195,17 +200,16 @@ export function ChargingInProgressScreen({
             clearInterval(chargeIntervalRef.current);
             chargeIntervalRef.current = null;
           }
-          // Session storage will be cleared by the parent KioskPage component
-          // when onChargingCompleteRef.current is called.
-          if (!isInternallyComplete) { // Prevent multiple calls
+          
+          if (!isInternallyComplete) { 
             setIsInternallyComplete(true);
-             // Ensure finalBillRef is updated before calling
-            finalBillRef.current = {
+            
+            finalBillForCompletionRef.current = { // Recalculate final bill for natural completion
                 kwhUsed: parseFloat((currentBill.kwhUsed + KWH_PER_SECOND).toFixed(2)),
                 durationMinutes: parseFloat(((elapsedTime + 1) / 60).toFixed(2)),
                 totalCost: parseFloat(((currentBill.kwhUsed + KWH_PER_SECOND) * costPerKwh).toFixed(0)),
             };
-            setTimeout(() => onChargingCompleteRef.current(finalBillRef.current), 0);
+            setTimeout(() => onChargingCompleteRef.current(finalBillForCompletionRef.current), 0);
           }
           return 100;
         }
@@ -224,18 +228,18 @@ export function ChargingInProgressScreen({
         chargeIntervalRef.current = null;
       }
     };
-  }, [estimatedTotalTimeMinutes, costPerKwh, isInternallyComplete, currentBill.kwhUsed, elapsedTime]); // Added dependencies for bill update
+  }, [estimatedTotalTimeMinutes, costPerKwh, isInternallyComplete, currentBill.kwhUsed, elapsedTime]); 
 
   const handleManualStop = () => {
     if (chargeIntervalRef.current) {
       clearInterval(chargeIntervalRef.current);
       chargeIntervalRef.current = null;
     }
-    // Session storage will be cleared by the parent KioskPage component
-    // when onStopChargingRef.current is called.
-    if (!isInternallyComplete) { // Prevent multiple calls
+    
+    if (!isInternallyComplete) { 
       setIsInternallyComplete(true);
-      setTimeout(() => onStopChargingRef.current(finalBillRef.current), 0);
+      // Pass the most recent currentBill state directly for manual stop
+      setTimeout(() => onStopChargingRef.current(currentBill), 0);
     }
   };
 
@@ -245,9 +249,9 @@ export function ChargingInProgressScreen({
       chargeIntervalRef.current = null;
     }
     if (!isInternallyComplete) {
-      setIsInternallyComplete(true); // Mark as complete to stop interval logic
+      setIsInternallyComplete(true); 
     }
-    // Session storage will be cleared by the parent KioskPage component
+    
     onSimulateErrorRef.current("chargingError.messageCableDisconnect");
   };
 
@@ -304,8 +308,8 @@ export function ChargingInProgressScreen({
       <div className="w-full max-w-6xl flex flex-col gap-y-3 sm:gap-y-4">
         {/* MAIN CONTENT ROW */}
         <div className="flex flex-col lg:flex-row gap-x-6 sm:gap-x-8 gap-y-3 sm:gap-y-4">
-          {/* Left Column (Current Session, Buttons, Tips) */}
-          <div className="w-full lg:w-[320px] flex-shrink-0 flex flex-col gap-y-3 sm:gap-y-4">
+          {/* Left Column (Current Session, Buttons, Weather) */}
+          <div className="w-full lg:w-[320px] flex-shrink-0 flex flex-col items-center gap-y-3 sm:gap-y-4">
             <Card className="w-full bg-secondary/10 dark:bg-card/80 shadow-lg flex flex-col">
               <CardHeader className="pb-2">
                 <CardTitle className="text-2xl text-center font-headline text-primary">{t("chargingInProgress.currentSession")}</CardTitle>
@@ -353,14 +357,14 @@ export function ChargingInProgressScreen({
               icon={<AlertCircle size={24} />}
               className="w-full border-amber-500 text-amber-600 hover:bg-amber-500/10 dark:border-amber-400 dark:text-amber-400 dark:hover:bg-amber-400/10"
             />
-            <ChargingTipsDisplay lang={lang} t={t} className="w-full" />
+            <WeatherWidget lang={lang} t={t} className="w-full mt-2" />
           </div>
 
-          {/* Right Column (Slot A1, Stores, Weather) */}
+          {/* Right Column (Slot Info, Stores, Tips) */}
           <div className="flex-grow flex flex-col gap-y-3 sm:gap-y-4">
             <WaitTimeDisplay slots={slotsToShowForWaitTimeDisplay} currentSlotId={slotNumber} lang={lang} t={t} className="w-full" />
-            <LocalBusinessDisplay lang={lang} t={t} />
-            <WeatherWidget lang={lang} t={t} className="w-full" />
+            <LocalBusinessDisplay lang={lang} t={t} from="charging" />
+            <ChargingTipsDisplay lang={lang} t={t} className="w-full min-h-[140px] sm:min-h-[160px]" />
           </div>
         </div>
       </div>

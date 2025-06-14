@@ -78,8 +78,8 @@ export function PrePaymentAuthScreen({ onAuthSuccess, onCancel, lang, t, onLangu
           <p className="text-card-foreground">{t("prePaymentAuth.cardReader.instruction")}</p>
         </div>
         
-        <div className="w-full sm:max-w-md p-6 border-2 border-dashed border-secondary rounded-lg bg-input text-center">
-          <Nfc size={48} className="text-secondary mx-auto mb-3" />
+        <div className="w-full sm:max-w-md p-6 border-2 border-dashed border-primary rounded-lg bg-input text-center">
+          <Nfc size={48} className="text-primary mx-auto mb-3" />
           <h3 className="text-xl font-semibold mb-2 text-card-foreground">{t("prePaymentAuth.contactless.title")}</h3>
           <p className="text-card-foreground">{t("prePaymentAuth.contactless.instruction")}</p>
         </div>

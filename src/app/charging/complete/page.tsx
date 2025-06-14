@@ -42,9 +42,20 @@ export default function ChargingStoppedPage() {
     if (countdownTimerRef.current) {
       clearTimeout(countdownTimerRef.current);
     }
-    router.push('/');
+  
+    // 💡 결제 정보 mock 데이터 저장 (필수)
+    localStorage.setItem('KioskFinalBill', JSON.stringify({
+      energy: '0.00kWh',
+      time: '0분',
+      price: '₩0'
+    }));
+    localStorage.setItem('KioskNextState', 'CHARGING_COMPLETE_PAYMENT');
+  
+    // ✅ 충전 완료 화면으로 이동
+    router.push('/complete');
   }, [router]);
-
+  
+  
   useEffect(() => {
     countdownTimerRef.current = setInterval(() => {
       setCountdown(prev => {

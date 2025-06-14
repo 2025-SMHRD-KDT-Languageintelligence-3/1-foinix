@@ -9,16 +9,14 @@ import { Language, t as translateFunction } from '@/lib/translations';
 import { useToast } from "@/hooks/use-toast";
 
 // Default data for props needed by ChargingInProgressScreen
-// These are used if the page is accessed directly or context isn't fully available.
-// ChargingInProgressScreen itself loads core progress (kWh, time, %) from its own sessionStorage.
 const DEFAULT_SLOTS_DATA: ChargingSlot[] = [
   { id: 'S1', status: 'occupied', vehicle: { licensePlate: "KIOSK-001", model:"carModel.tesla.model_y"}, estimatedCompletionTime: "...", currentChargeKW: 0, user:"KIOSK-001" },
   { id: 'S2', status: 'available' },
 ];
 
 const DEFAULT_ASSIGNED_SLOT_ID = 'S1';
-const DEFAULT_SELECTED_CONNECTOR = 'ccs_combo_2'; // A common default
-const DEFAULT_ESTIMATED_TIME_MINUTES = 30; // Default estimated time
+const DEFAULT_SELECTED_CONNECTOR = 'ccs_combo_2'; 
+const DEFAULT_ESTIMATED_TIME_MINUTES = 30; 
 
 export default function ChargingPage() {
   const router = useRouter();
@@ -27,7 +25,7 @@ export default function ChargingPage() {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true); // Ensure component only renders on client for sessionStorage/localStorage access
+    setIsClient(true); 
     const storedLang = localStorage.getItem('kioskLanguage') as Language | null;
     if (storedLang) {
       setLang(storedLang);
@@ -49,18 +47,59 @@ export default function ChargingPage() {
   }, [lang]);
 
   const handleStopCharging = (finalBill: BillDetails) => {
-    if (typeof window !== 'undefined') {
+    try {
+      if (typeof window !== 'undefined') {
+        // Clear session-specific progress
         sessionStorage.removeItem('kioskChargingProgressState');
+
+        // Set localStorage for KioskPage to pick up
+        localStorage.setItem('kioskNextState', 'CHARGING_COMPLETE_PAYMENT');
+        
+        // Ensure finalBill is a valid object before stringifying.
+        const billToStore: BillDetails = finalBill && typeof finalBill.totalCost === 'number' 
+          ? finalBill 
+          : { kwhUsed: 0, durationMinutes: 0, totalCost: 0, ...finalBill }; // Spread to keep other fields if they exist, ensure core fields
+        
+        localStorage.setItem('kioskFinalBill', JSON.stringify(billToStore));
+      }
+
+      // Display toast to user
+      const displayCost = finalBill && typeof finalBill.totalCost === 'number' ? finalBill.totalCost : 0;
+      toast({
+        title: t("payment.title.complete"), // "Charging Complete!"
+        description: `${t("payment.finalBill.total")}: ₩${displayCost.toLocaleString()}`, // "Total Amount: ₩..."
+      });
+
+      // Navigate to the main page, KioskPage will handle rendering PaymentScreen
+      if (router) {
+        // Using setTimeout to potentially avoid race conditions with localStorage/state updates
+        // and router's internal state.
+        setTimeout(() => {
+          router.push('/');
+        }, 50); // A small delay
+      } else {
+        console.error("Router instance is not available in /charging/page.tsx handleStopCharging");
+        // Fallback if router is somehow not available
+        if (typeof window !== 'undefined') window.location.href = '/';
+      }
+    } catch (error) {
+      console.error("Error in handleStopCharging:", error);
+      const errorDescriptionKey = typeof error === 'string' ? error : (error instanceof Error ? error.message : "An unknown error occurred.");
+      toast({
+        title: t("error.genericTitle"),
+        description: `${t("toast.chargingStopped.description")} ${errorDescriptionKey}`,
+        variant: "destructive"
+      });
+      // Attempt a fallback navigation to home page
+      if (router) {
+        setTimeout(() => { router.push('/'); }, 50);
+      } else if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      }
     }
-    toast({
-      title: t("toast.chargingStopped.title"),
-      description: t("toast.chargingStopped.description"),
-    });
-    router.push('/charging/complete');
   };
 
   const handleChargingComplete = (finalBill: BillDetails) => {
-    // This function remains as is, navigating to the main page's payment flow
     if (typeof window !== 'undefined') {
         sessionStorage.removeItem('kioskChargingProgressState');
     }
@@ -68,15 +107,8 @@ export default function ChargingPage() {
       title: t("payment.title.complete"),
       description: `${t("payment.finalBill.total")}: ₩${finalBill.totalCost.toLocaleString()}`,
     });
-    // Typically, you'd navigate to a payment screen or main page.
-    // For now, let's assume the main page handles the next step post-completion from this dedicated charging page.
-    // If the main KioskPage (at '/') handles payment, redirect there.
-    // Or if there's a specific payment page for this /charging route, navigate there.
-    // For simplicity, if ChargingInProgressScreen on this page leads to completion,
-    // it might need to transition to a payment screen specific to this context or signal the main app.
-    // Let's redirect to main page for now, assuming it handles the 'CHARGING_COMPLETE_PAYMENT' state.
-    localStorage.setItem('kioskNextState', 'CHARGING_COMPLETE_PAYMENT'); // Signal main page
-    localStorage.setItem('kioskFinalBill', JSON.stringify(finalBill)); // Pass bill
+    localStorage.setItem('kioskNextState', 'CHARGING_COMPLETE_PAYMENT');
+    localStorage.setItem('kioskFinalBill', JSON.stringify(finalBill));
     router.push('/'); 
   };
 
@@ -89,10 +121,9 @@ export default function ChargingPage() {
     if (typeof window !== 'undefined') {
         sessionStorage.removeItem('kioskChargingProgressState');
     }
-     // Similar to completion, signal main page or handle error state locally.
     localStorage.setItem('kioskNextState', 'CHARGING_ERROR');
     localStorage.setItem('kioskChargingErrorMessage', t(errorMessageKey));
-    router.push('/');
+    router.push('/'); // Navigate to main page, KioskPage will show error screen
   };
   
   if (!isClient) {
@@ -111,7 +142,7 @@ export default function ChargingPage() {
         slotNumber={slotNumber}
         initialBill={initialBill}
         estimatedTotalTimeMinutes={estimatedTotalTimeMinutes}
-        onStopCharging={handleStopCharging}
+        onStopCharging={handleStopCharging} 
         onChargingComplete={handleChargingComplete}
         onSimulateError={handleSimulateError}
         allSlots={allSlots}
