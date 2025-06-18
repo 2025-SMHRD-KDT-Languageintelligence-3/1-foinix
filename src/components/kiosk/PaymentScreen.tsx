@@ -69,7 +69,7 @@ export function PaymentScreen({ bill, onPaymentProcessed, lang, t, onLanguageSwi
         
         <p className="text-xl text-center mb-4 text-muted-foreground">{t("payment.receipt.question")}</p>
         <div className="w-full max-w-md space-y-4">
-          <KioskButton onClick={() => onPaymentProcessed('sms')} label={t("payment.receipt.sms")} icon={<Smartphone />} variant="outline" />
+        
           <KioskButton onClick={() => onPaymentProcessed('none')} label={t("payment.receipt.none")} variant="ghost" />
         </div>
       </FullScreenCard>

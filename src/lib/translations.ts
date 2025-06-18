@@ -128,9 +128,9 @@ export const translations: Record<string, Record<Language, string>> = {
   "vehicleConfirmation.placeholder.plate": { ko: "예: 12가1234", en: "e.g., 12GA1234" },
   "vehicleConfirmation.button.submitPlate": { ko: "번호판 제출", en: "Submit Plate" },
   "vehicleConfirmation.button.backToScan": { ko: "스캔 결과로 돌아가기", en: "Back to Scan Results" },
+  "vehicleConfirmation.button.selectModel": { ko: "차종 선택하기", en: "Select Car Model" },
 
-
-  // === PrePaymentAuthScreen ===
+   // === PrePaymentAuthScreen ===
   "prePaymentAuth.title": { ko: "결제 인증", en: "Payment Authorization" },
   "prePaymentAuth.instruction": { ko: "결제 방법을 선택하고, 해당 방법으로 인증을 진행해주세요.", en: "Select your payment method and proceed with authorization." },
   "prePaymentAuth.processingTitle": { ko: "결제 승인 중...", en: "Authorizing Payment..." },
@@ -143,7 +143,9 @@ export const translations: Record<string, Record<Language, string>> = {
   "prePaymentAuth.button.authWithCard": { ko: "카드로 인증 진행", en: "Authorize with Card" },
   "prePaymentAuth.button.authWithNFC": { ko: "NFC/모바일로 인증 진행", en: "Authorize with NFC/Mobile" },
   "prePaymentAuth.toast.success.title": { ko: "결제 승인 성공", en: "Payment Authorized" },
-  "prePaymentAuth.toast.success.description_select_connector": { ko: "결제 수단이 성공적으로 승인되었습니다. 충전 커넥터 유형을 선택해주세요.", en: "Payment method successfully authorized. Please select a charging connector type." },
+  "prePaymentAuth.toast.success.description_select_connector": {
+  ko: "결제 수단이 성공적으로 승인되었습니다. 충전 커넥터 유형을 선택해주세요.",
+  en: "Payment method successfully authorized. Please select a charging connector type."},
 
   // === InitialPromptConnectScreen ===
   "initialPromptConnect.title": { ko: "{{slotNumber}}번 슬롯에 충전기를 연결하세요", en: "Connect Charger to Slot {{slotNumber}}" },

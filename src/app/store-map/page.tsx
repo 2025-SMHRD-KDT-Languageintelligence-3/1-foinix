@@ -2,7 +2,7 @@
 "use client";
 
 import { Suspense } from 'react';
-import StoreMapContent from '@/components/kiosk/StoreMapContent';
+import StoreMapContent from '../../components/kiosk/StoreMapContent';
 import { Loader2 } from 'lucide-react';
 
 export default function StoreMapPage() {

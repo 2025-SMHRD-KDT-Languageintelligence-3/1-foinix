@@ -22,6 +22,15 @@ export function InitialPromptConnectScreen({ vehicleInfo, slotNumber, onChargerC
   const vehicleModelDisplay = vehicleInfo.model ? t(vehicleInfo.model) : t('selectCarModel.unknownModel');
   const portLocationDisplay = vehicleInfo.portLocationDescription ? t(vehicleInfo.portLocationDescription) : "";
 
+   let connectionImagePath = vehicleInfo.connectionImageUrl;
+
+  if (!connectionImagePath) {
+  const modelKey = vehicleInfo.model?.split('.').pop()?.toLowerCase(); // 예: model_y
+  connectionImagePath = modelKey
+    ? `/images/portLocations/${modelKey}.png`
+    : 'https://placehold.co/600x400.png'; // fallback 이미지
+}
+
   const languageButton = (
     <Button
       onClick={onLanguageSwitch}
@@ -47,12 +56,12 @@ export function InitialPromptConnectScreen({ vehicleInfo, slotNumber, onChargerC
         </p>
       )}
       
-      <div className="w-full max-w-lg my-8 p-4 border-2 border-dashed border-primary rounded-lg bg-muted/30">
+      <div className="w-full max-w-lg my-8 p-4 ">
         <Image 
-          src={vehicleInfo.connectionImageUrl || "https://placehold.co/600x400.png"} 
+          src={connectionImagePath} 
           alt={t("initialPromptConnect.alt.connectionImage")}
-          width={600} 
-          height={400} 
+          width={400} 
+          height={500} 
           className="rounded-md object-contain mx-auto"
           data-ai-hint={vehicleInfo.dataAiHint || "charger connection vehicle"}
         />

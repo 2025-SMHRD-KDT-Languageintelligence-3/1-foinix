@@ -26,6 +26,8 @@ import { ChargingInProgressScreen } from '@/components/kiosk/ChargingInProgressS
 import { PaymentScreen } from '@/components/kiosk/PaymentScreen';
 import { ThankYouScreen } from '@/components/kiosk/ThankYouScreen';
 import { ChargingErrorScreen } from '@/components/kiosk/ChargingErrorScreen';
+import Image from 'next/image';
+import chargingImage from '/public/assets/images/charging.png';
 
 
 const MOCK_CAR_MODELS_HYUNDAI: CarModel[] = [
@@ -68,15 +70,27 @@ const MOCK_VEHICLE_DATA: VehicleInfo = {
   licensePlate: `데모-${Math.floor(Math.random() * 900) + 100}`,
   model: "carModel.tesla.model_y",
   portLocationDescription: "selectCarModel.portLocationGeneric",
-  connectionImageUrl: 'https://placehold.co/600x400.png',
+  connectionImageUrl: '/images/dldl.png', // 기본값을 CCS2 이미지로 설정
   dataAiHint: "vehicle charging",
   confidence: 0.95,
   recommendedConnectorType: 'ccs_combo_2',
 };
 
 const MOCK_AVAILABLE_CONNECTORS: ConnectorTypeInfo[] = [
-  { id: 'ac_type_1', name: 'connector.ac_type_1.name', imageUrl: 'https://placehold.co/200x150.png', dataAiHint: 'AC connector', description: 'connector.ac_type_1.description' },
-  { id: 'ccs_combo_2', name: 'connector.ccs_combo_2.name', imageUrl: 'https://placehold.co/200x150.png', dataAiHint: 'CCS2 connector', description: 'connector.ccs_combo_2.description' },
+  {
+    id: 'ac_type_1',
+    name: 'connector.ac_type_1.name',
+    imageUrl: '/images/AC.png',
+    dataAiHint: 'AC connector',
+    description: 'connector.ac_type_1.description',
+  },
+  {
+    id: 'ccs_combo_2',
+    name: 'connector.ccs_combo_2.name',
+    imageUrl: '/images/CCS2.png',
+    dataAiHint: 'CCS2 connector',
+    description: 'connector.ccs_combo_2.description',
+  },
 ];
 
 const MOCK_SLOTS_DATA: ChargingSlot[] = [
@@ -525,13 +539,13 @@ export default function KioskPage() {
         if (!appData.vehicleInfo) {
              console.warn("Missing vehicleInfo for VEHICLE_CONFIRMATION. Resetting.");
              resetToInitialWelcome();
-             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onSelectCarModelManually={() => setKioskState('SELECT_CAR_BRAND')}/>;
         }
         return <VehicleConfirmationScreen {...screenProps} vehicleInfo={appData.vehicleInfo} onConfirm={handleVehicleConfirmed} />;
       case 'PRE_PAYMENT_AUTH':
         return <PrePaymentAuthScreen {...screenProps} onAuthSuccess={handlePaymentAuthSuccess} onCancel={resetToInitialWelcome} />;
       case 'SELECT_CONNECTOR_TYPE':
-        return <SelectConnectorTypeScreen {...screenProps} vehicleInfo={appData.vehicleInfo} availableConnectors={MOCK_AVAILABLE_CONNECTORS} onConnectorSelect={handleConnectorTypeSelected} onCancel={resetToInitialWelcome} />;
+        return <SelectConnectorTypeScreen {...screenProps} vehicleInfo={appData.vehicleInfo} availableConnectors={MOCK_AVAILABLE_CONNECTORS} onConnectorSelect={handleConnectorTypeSelected} onCancel={resetToInitialWelcome} onSelectCarModelManually={() => setKioskState('SELECT_CAR_BRAND')} />;
       case 'INITIAL_PROMPT_CONNECT':
         if (!appData.vehicleInfo || !appData.assignedSlotId) {
              console.warn("Missing vehicle or slot info for INITIAL_PROMPT_CONNECT. Handling...");
