@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeToggleButton } from '@/components/kiosk/ThemeToggleButton';
 import { VoiceRecognitionButton } from '@/components/kiosk/VoiceRecognitionButton';
-import { VoiceLogButton } from '@/components/kiosk/VoiceLogButton'; // ✅ 추가
+import { VoiceLogButton } from '@/components/kiosk/VoiceLogButton';
+import { ThemeProvider } from 'next-themes'; // ✅ 추가
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -26,13 +27,16 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <div className="fixed bottom-4 right-4 z-50 flex space-x-4">
-          <VoiceRecognitionButton />
-          <VoiceLogButton /> {/* ✅ 여기에 로그 버튼 추가 */}
-          <ThemeToggleButton />
-        </div>
-        {children}
-        <Toaster />
+        {/* ✅ ThemeProvider로 감싸기 */}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <div className="fixed bottom-4 right-4 z-50 flex space-x-4">
+            <VoiceRecognitionButton />
+            <VoiceLogButton />
+            <ThemeToggleButton />
+          </div>
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

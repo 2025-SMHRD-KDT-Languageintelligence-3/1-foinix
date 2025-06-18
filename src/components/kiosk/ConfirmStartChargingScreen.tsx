@@ -27,7 +27,6 @@ export function ConfirmStartChargingScreen({ onStart, onCancel, lang, t, onLangu
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timerRef.current!);
-          // Defer the onStart call to prevent updating parent during child's render/effect phase
           setTimeout(() => onStart(), 0); 
           return 0;
         }

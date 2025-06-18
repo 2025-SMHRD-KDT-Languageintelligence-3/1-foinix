@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import type { CarBrand, VehicleInfo } from '@/types/kiosk';
 import { Card } from '@/components/ui/card';
 import type { Language, t as TFunction } from '@/lib/translations';
-import { cn } from '@/lib/utils';
 
 interface SelectCarModelScreenProps {
   brand: CarBrand | undefined;
@@ -42,20 +41,7 @@ export function SelectCarModelScreen({ brand, onModelSelect, onCancel, lang, t, 
   }
   
   const brandName = t(brand.name);
-  const numModels = brand.models.length;
-
-  const gridContainerClasses = cn(
-    "grid gap-4 w-full max-w-5xl mb-8", // Reduced gap and mb
-    numModels === 1 && "grid-cols-1 justify-items-center",
-    numModels === 2 && "grid-cols-1 sm:grid-cols-2 md:grid-cols-2",
-    numModels >= 3 && "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
-  );
-
-  const cardClasses = cn(
-    "p-2 flex flex-col items-center justify-between hover:shadow-xl cursor-pointer transition-all hover:bg-muted/50", // Reduced p
-    numModels === 1 && "w-full max-w-xs sm:max-w-sm" 
-  );
-
+  
   return (
     <FullScreenCard 
       title={t("selectCarModel.title", { brandName })}
@@ -64,23 +50,22 @@ export function SelectCarModelScreen({ brand, onModelSelect, onCancel, lang, t, 
        <Image 
             src={brand.logoUrl} 
             alt={brandName + " " + t("logo")}
-            width={70} // Reduced width
-            height={70} // Reduced height
-            className="object-contain rounded-md mb-4" // Reduced mb
+            width={80} // Reduced width
+            height={80} // Reduced height
+            className="object-contain rounded-md mb-6" // Reduced mb
             data-ai-hint={brand.dataAiHint || 'car logo'}
         />
       <p className="text-lg sm:text-xl text-center mb-8 text-muted-foreground"> 
-        {/* Reduced text size and mb */}
         {t("selectCarModel.instruction")}
       </p>
       
-      <div className={gridContainerClasses}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl mb-10">
         {brand.models.map((model) => {
           const modelDisplayName = t(model.name);
           return (
             <Card 
               key={model.id} 
-              className={cardClasses}
+              className="p-3 flex flex-col items-center justify-between hover:shadow-xl cursor-pointer transition-all hover:bg-muted/50"
               onClick={() => onModelSelect({
                   model: model.name, 
                   licensePlate: 'selectCarModel.manualEntryLicensePlate', 
@@ -93,8 +78,7 @@ export function SelectCarModelScreen({ brand, onModelSelect, onCancel, lang, t, 
               onKeyDown={(e) => e.key === 'Enter' && onModelSelect({ model: model.name, licensePlate: 'selectCarModel.manualEntryLicensePlate' })}
               aria-label={modelDisplayName}
             >
-              <div className="w-full h-32 relative mb-1"> 
-                  {/* Reduced h and mb */}
+              <div className="w-full h- relative mb-2"> 
                   <Image 
                     src={model.imageUrl} 
                     alt={modelDisplayName}

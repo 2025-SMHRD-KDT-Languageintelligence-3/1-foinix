@@ -23,10 +23,10 @@ const tips: Tip[] = [
 interface ChargingTipsDisplayProps {
   lang: Language;
   t: typeof TFunction;
-  className?: string;
+  
 }
 
-export function ChargingTipsDisplay({ lang, t, className }: ChargingTipsDisplayProps) {
+export function ChargingTipsDisplay({ lang, t, }: ChargingTipsDisplayProps) {
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
 
   useEffect(() => {
@@ -40,16 +40,16 @@ export function ChargingTipsDisplay({ lang, t, className }: ChargingTipsDisplayP
   const currentTip = tips[currentTipIndex];
 
   return (
-    <Card className={cn("w-full bg-card shadow-lg flex flex-col", className)}>
+    <Card className="w-full bg-card shadow-lg mt-6">
       <CardHeader>
         <CardTitle className="text-xl flex items-center gap-2 text-primary font-headline">
           {currentTip.icon}
           {t("chargingTips.title")}
         </CardTitle>
       </CardHeader>
-      <CardContent className="">
-        <p className="text-base text-card-foreground whitespace-pre-line">{t(currentTip.textKey)}</p>
+      <CardContent>
+        <p className="text-base text-foreground whitespace-pre-line">{t(currentTip.textKey)}</p>
       </CardContent>
     </Card>
-  );
+    );
 }

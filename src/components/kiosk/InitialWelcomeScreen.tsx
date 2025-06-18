@@ -41,8 +41,16 @@ export function InitialWelcomeScreen({ onProceedStandard, lang, t, onLanguageSwi
           label={t("initialWelcome.proceedButtonStandard")}
           icon={<PlayCircle />}
         />
+        <KioskButton
+          onClick={onProceedQuick}
+          label={t("initialWelcome.proceedButtonQuick")}
+          icon={<Zap />}
+          variant="secondary"
+        />
       </div>
-      {/* Removed the auto-switch message paragraph */}
+      <p className="text-lg text-muted-foreground animate-pulse">
+        {t("initialWelcome.autoSwitchMessage")}
+      </p>
     </FullScreenCard>
   );
 }

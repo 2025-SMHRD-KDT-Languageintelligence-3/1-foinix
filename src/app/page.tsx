@@ -539,13 +539,13 @@ export default function KioskPage() {
         if (!appData.vehicleInfo) {
              console.warn("Missing vehicleInfo for VEHICLE_CONFIRMATION. Resetting.");
              resetToInitialWelcome();
-             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onSelectCarModelManually={() => setKioskState('SELECT_CAR_BRAND')}/>;
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
         }
         return <VehicleConfirmationScreen {...screenProps} vehicleInfo={appData.vehicleInfo} onConfirm={handleVehicleConfirmed} />;
       case 'PRE_PAYMENT_AUTH':
         return <PrePaymentAuthScreen {...screenProps} onAuthSuccess={handlePaymentAuthSuccess} onCancel={resetToInitialWelcome} />;
       case 'SELECT_CONNECTOR_TYPE':
-        return <SelectConnectorTypeScreen {...screenProps} vehicleInfo={appData.vehicleInfo} availableConnectors={MOCK_AVAILABLE_CONNECTORS} onConnectorSelect={handleConnectorTypeSelected} onCancel={resetToInitialWelcome} onSelectCarModelManually={() => setKioskState('SELECT_CAR_BRAND')} />;
+        return <SelectConnectorTypeScreen {...screenProps} vehicleInfo={appData.vehicleInfo} availableConnectors={MOCK_AVAILABLE_CONNECTORS} onConnectorSelect={handleConnectorTypeSelected} onCancel={resetToInitialWelcome} />;
       case 'INITIAL_PROMPT_CONNECT':
         if (!appData.vehicleInfo || !appData.assignedSlotId) {
              console.warn("Missing vehicle or slot info for INITIAL_PROMPT_CONNECT. Handling...");

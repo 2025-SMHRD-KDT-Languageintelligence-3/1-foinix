@@ -47,18 +47,18 @@ export function InitialPromptConnectScreen({ vehicleInfo, slotNumber, onChargerC
       bottomCenterAccessory={languageButton}
     >
       <PlugZap size={80} className="text-primary mb-6" />
-      <p className="text-xl sm:text-2xl text-center mb-6 text-card-foreground"> {/* Changed text-muted-foreground to text-card-foreground */}
+      <p className="text-xl sm:text-2xl text-center mb-6 text-card-foreground"> 
         {t("initialPromptConnect.instruction", { vehicleModel: vehicleModelDisplay })}
       </p>
       {portLocationDisplay && (
-        <p className="text-lg text-center mb-4 text-card-foreground"> {/* Ensured this also uses card-foreground for clarity */}
+        <p className="text-lg text-center mb-4 text-card-foreground"> 
           {t("initialPromptConnect.portLocation", { portLocationDescription: portLocationDisplay })}
         </p>
       )}
       
-      <div className="w-full max-w-lg my-8 p-4 ">
+      <div className="w-full max-w-lg my-8 p-4 border-2 border-dashed border-primary rounded-lg bg-muted/30">
         <Image 
-          src={connectionImagePath} 
+          src={vehicleInfo.connectionImageUrl || "https://placehold.co/600x400.png"} 
           alt={t("initialPromptConnect.alt.connectionImage")}
           width={400} 
           height={500} 

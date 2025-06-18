@@ -12,13 +12,13 @@ import type { Language, t as TFunction } from '@/lib/translations';
 
 interface PaymentScreenProps {
   bill: BillDetails;
-  onPaymentProcessed: (receiptChoice: 'sms' | 'none') => void;
+  onPaymentProcessed: (receiptChoice: 'sms' | 'qr' | 'none') => void;
   lang: Language;
   t: typeof TFunction;
   onLanguageSwitch: () => void;
 }
 
-type PaymentMethod = 'card' | 'nfc' | null;
+type PaymentMethod = 'card' | 'nfc' | 'qr_pay' | null;
 
 export function PaymentScreen({ bill, onPaymentProcessed, lang, t, onLanguageSwitch }: PaymentScreenProps) {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>(null);
@@ -47,7 +47,7 @@ export function PaymentScreen({ bill, onPaymentProcessed, lang, t, onLanguageSwi
       <FullScreenCard title={t("payment.processing.title")} bottomCenterAccessory={languageButton}>
         <CreditCard size={80} className="animate-pulse text-primary mb-6" />
         <p className="text-xl text-center mb-4">{t("payment.processing.message")}</p>
-        {/* Removed QrCode icon as QR payment is removed */}
+        <QrCode size={80} className="text-primary my-8 animate-ping" />
       </FullScreenCard>
     );
   }
@@ -70,6 +70,8 @@ export function PaymentScreen({ bill, onPaymentProcessed, lang, t, onLanguageSwi
         <p className="text-xl text-center mb-4 text-muted-foreground">{t("payment.receipt.question")}</p>
         <div className="w-full max-w-md space-y-4">
         
+          <KioskButton onClick={() => onPaymentProcessed('none')} label={t("payment.receipt.none")} variant="ghost" />
+            <KioskButton onClick={() => onPaymentProcessed('qr')} label={t("payment.receipt.qr")} icon={<QrCode />} variant="outline" />
           <KioskButton onClick={() => onPaymentProcessed('none')} label={t("payment.receipt.none")} variant="ghost" />
         </div>
       </FullScreenCard>
@@ -97,6 +99,7 @@ export function PaymentScreen({ bill, onPaymentProcessed, lang, t, onLanguageSwi
       <div className="w-full max-w-md space-y-4">
         <KioskButton onClick={() => handlePaymentMethodSelect('card')} label={t("payment.button.payByCard")} icon={<CreditCard />} />
         <KioskButton onClick={() => handlePaymentMethodSelect('nfc')} label={t("payment.button.payByNFC")} icon={<Smartphone />} />
+        <KioskButton onClick={() => handlePaymentMethodSelect('qr_pay')} label={t("payment.button.payByQR")} icon={<QrCode />} />
       </div>
     </FullScreenCard>
   );

@@ -72,8 +72,7 @@ export default function CarbonComparison() {
       <h2 className="text-lg font-bold mb-4">🚗 내 주행거리, 전기차와 내연기관차의 차이는?</h2>
 
       <div className="flex flex-wrap gap-4 items-end mb-4">
-        {/* ✅ 시군 선택 드롭다운: 가로 길이 주행거리 입력창과 동일하게 수정 */}
-        <div className="flex flex-col gap-2 min-w-[200px] w-full sm:w-auto">
+        <div className="flex-1 min-w-[200px]">
           <label className="block text-sm font-medium mb-1">시군 선택</label>
           <select
             className="w-full border px-2 py-1 rounded text-sm"
