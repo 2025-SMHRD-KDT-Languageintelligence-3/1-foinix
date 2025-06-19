@@ -186,19 +186,19 @@ export function ChargingInProgressScreen({
     }
 
     const updateCharge = () => {
-      let newElapsedTimeAfterUpdate = 0;
       setElapsedTime(prevTime => {
-        newElapsedTimeAfterUpdate = prevTime + 1;
-        return newElapsedTimeAfterUpdate;
-      });
+        const updatedTime = prevTime + 1;
 
-      setCurrentBill(prevBill => {
-        const newKwh = prevBill.kwhUsed + KWH_PER_SECOND;
-        return {
-          kwhUsed: parseFloat(newKwh.toFixed(2)),
-          durationMinutes: parseFloat((newElapsedTimeAfterUpdate / 60).toFixed(2)),
-          totalCost: parseFloat((newKwh * costPerKwh).toFixed(0)),
-        };
+        setCurrentBill(prevBill => {
+          const newKwh = prevBill.kwhUsed + KWH_PER_SECOND;
+          return {
+            kwhUsed: parseFloat(newKwh.toFixed(2)),
+            durationMinutes: parseFloat((updatedTime / 60).toFixed(2)),
+            totalCost: parseFloat((newKwh * costPerKwh).toFixed(0)),
+          };
+        });
+
+        return updatedTime;
       });
 
       setCurrentChargePercentage(prevPercent => {
@@ -208,14 +208,14 @@ export function ChargingInProgressScreen({
             clearInterval(chargeIntervalRef.current);
             chargeIntervalRef.current = null;
           }
-          
-          if (!isInternallyComplete) { 
+
+          if (!isInternallyComplete) {
             setIsInternallyComplete(true);
-            
-            finalBillForCompletionRef.current = { // Recalculate final bill for natural completion
-                kwhUsed: parseFloat((currentBill.kwhUsed + KWH_PER_SECOND).toFixed(2)),
-                durationMinutes: parseFloat(((elapsedTime + 1) / 60).toFixed(2)),
-                totalCost: parseFloat(((currentBill.kwhUsed + KWH_PER_SECOND) * costPerKwh).toFixed(0)),
+
+            finalBillForCompletionRef.current = {
+              kwhUsed: parseFloat((currentBill.kwhUsed + KWH_PER_SECOND).toFixed(2)),
+              durationMinutes: parseFloat(((elapsedTime + 1) / 60).toFixed(2)),
+              totalCost: parseFloat(((currentBill.kwhUsed + KWH_PER_SECOND) * costPerKwh).toFixed(0)),
             };
             setTimeout(() => onChargingCompleteRef.current(finalBillForCompletionRef.current), 0);
           }
@@ -225,9 +225,6 @@ export function ChargingInProgressScreen({
       });
     };
 
-    if (chargeIntervalRef.current) {
-        clearInterval(chargeIntervalRef.current);
-    }
     chargeIntervalRef.current = setInterval(updateCharge, 1000);
 
     return () => {
@@ -236,7 +233,7 @@ export function ChargingInProgressScreen({
         chargeIntervalRef.current = null;
       }
     };
-  }, [estimatedTotalTimeMinutes, costPerKwh, isInternallyComplete, currentBill.kwhUsed, elapsedTime]); 
+  }, [estimatedTotalTimeMinutes, costPerKwh, isInternallyComplete]);
 
   const handleManualStop = () => {
     if (chargeIntervalRef.current) {
