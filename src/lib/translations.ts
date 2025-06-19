@@ -112,10 +112,6 @@ export const translations: Record<string, Record<Language, string>> = {
   "carModel.tesla.cybertruck": { ko: "사이버트럭", en: "Cybertruck" },
   "carModel.tesla.roadster": { ko: "로드스터", en: "Roadster" },
 
-  // === WelcomeScreen (Auto-scan path or post-consent processing) ===
-  "welcome.title": { ko: "EV이스 키오스크에 오신 것을 환영합니다", en: "Welcome to EV이스 Kiosk" },
-  "welcome.message": { ko: "차량 정보를 확인하고 사용 가능한 충전 슬롯을 찾는 중입니다...", en: "Identifying your vehicle and finding an available charging slot..." },
-  "welcome.quickModeMessage": { ko: "빠른 시작 모드: 차량 정보를 처리 중입니다...", en: "Quick Start Mode: Processing vehicle information..." },
 
   // === VehicleConfirmationScreen ===
   "vehicleConfirmation.title": { ko: "차량 확인", en: "Vehicle Confirmation" },
@@ -129,6 +125,12 @@ export const translations: Record<string, Record<Language, string>> = {
   "vehicleConfirmation.button.submitPlate": { ko: "번호판 제출", en: "Submit Plate" },
   "vehicleConfirmation.button.backToScan": { ko: "스캔 결과로 돌아가기", en: "Back to Scan Results" },
   "vehicleConfirmation.button.selectModel": { ko: "차종 선택하기", en: "Select Car Model" },
+
+  // === ManualPlateInputScreen ===
+  "manualPlateInput.title": { ko: "차량 번호판 입력", en: "Enter License Plate" },
+  "manualPlateInput.instruction": { ko: "차량 번호판을 입력해주세요.", en: "Please enter your vehicle's license plate." },
+  "manualPlateInput.placeholder.plate": { ko: "예: 12가3456", en: "e.g., 12GA3456" },
+  "manualPlateInput.button.submit": { ko: "번호판 제출", en: "Submit Plate" },
 
    // === PrePaymentAuthScreen ===
   "prePaymentAuth.title": { ko: "결제 인증", en: "Payment Authorization" },

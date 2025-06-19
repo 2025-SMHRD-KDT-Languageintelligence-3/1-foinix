@@ -80,7 +80,6 @@ export type KioskState =
   | 'INITIAL_WELCOME'
   | 'LIVE_CAMERA_FEED'
   | 'DATA_CONSENT'
-  | 'WELCOME'
   | 'VEHICLE_CONFIRMATION'
   | 'QUEUE'
   | 'PRE_PAYMENT_AUTH'
@@ -96,6 +95,7 @@ export type KioskState =
   | 'SCANNING'
   | 'ASSIGNING_SLOT'
   | 'SELECT_CAR_BRAND'
+  | 'MANUAL_PLATE_INPUT'
   | 'SELECT_CAR_MODEL'
   | 'CHARGING_ERROR';
 
