@@ -545,7 +545,14 @@ const handleConsentDisagree = () => {
       case 'DATA_CONSENT':
         return <DataConsentScreen {...screenProps} onAgree={handleConsentAgree} onDisagree={handleConsentDisagree} disagreeTapCount={disagreeTapCount} />;
       case 'MANUAL_PLATE_INPUT':
-        return <ManualPlateInputScreen {...screenProps} onSubmit={handleManualPlateSubmitted} onCancel={resetToInitialWelcome} />;
+        return (
+          <ManualPlateInputScreen
+            lang={appData.language}
+            onLanguageSwitch={handleLanguageSwitch}
+            onSubmit={handleManualPlateSubmitted}
+            onCancel={resetToInitialWelcome}
+          />
+        );
       case 'SELECT_CAR_BRAND':
         return <SelectCarBrandScreen {...screenProps} brands={MOCK_CAR_BRANDS} onBrandSelect={handleBrandSelected} onCancel={resetToInitialWelcome} />;
       case 'SELECT_CAR_MODEL':
