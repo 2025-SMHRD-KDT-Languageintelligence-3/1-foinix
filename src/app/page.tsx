@@ -321,27 +321,15 @@ export default function KioskPage() {
   };
 
 const handleConsentDisagree = () => {
-    // Since quick mode is removed, only standard mode logic applies here.
-    if (disagreeTapCount === 0) {
-        setDisagreeTapCount(1);
-        toast({
-            title: t('dataConsent.toast.disagreeWarning.title'),
-            description: t('dataConsent.toast.disagreeWarning.description'),
-            variant: "destructive",
-            duration: 7000,
-        });
-        console.log('Firebase Log (simulated): standard_mode_consent_disagree_first_tap, timestamp:', new Date().toISOString(), 'language:', appData.language);
-    } else { 
-        setAppData(prev => ({ ...prev, consentSkipped: true, currentMode: 'standard', vehicleInfo: null, selectedBrandId: null }));
-        console.log('Firebase Log (simulated): consent_skipped_proceed_manual, timestamp:', new Date().toISOString(), 'language:', appData.language);
-        toast({
-            title: t('dataConsent.toast.consentSkipped.title'),
-            description: t('dataConsent.toast.consentSkipped.description'),
-            duration: 5000,
-        });
-        setKioskState('MANUAL_PLATE_INPUT');
-        setDisagreeTapCount(0); 
-    }
+    toast({
+        title: t('dataConsent.toast.disagreeWarning.title'),
+        description: t('dataConsent.toast.disagreeWarning.description'),
+        variant: 'destructive',
+        duration: 7000,
+    });
+    console.log('Firebase Log (simulated): consent_disagreed, timestamp:', new Date().toISOString(), 'language:', appData.language);
+    setDisagreeTapCount(0);
+    resetToInitialWelcome();
 };
 
   const handleManualPlateSubmitted = useCallback((plate: string) => {
