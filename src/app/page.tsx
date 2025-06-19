@@ -472,12 +472,10 @@ const handleConsentDisagree = () => {
       toast({ title: t('payment.toast.smsDemo.title'), description: t('payment.toast.smsDemo.description') });
     }
     console.log('Firebase Log (simulated): payment_processed, mode:', appData.currentMode, 'receipt:', receiptChoice, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
-    if (appData.isQueueNotEmpty) { 
-        setKioskState('VACATE_SLOT_REMINDER');
-    } else {
-        setKioskState('THANK_YOU');
-    }
-  }, [appData.currentMode, appData.isQueueNotEmpty, appData.language, t, toast]);
+
+    // Always show the thank you screen after the receipt step
+    setKioskState('THANK_YOU');
+  }, [appData.currentMode, appData.language, t, toast]);
 
   const handleSimulateChargingError = useCallback((_errorMessageKey: string) => {
     if (typeof window !== 'undefined') {
