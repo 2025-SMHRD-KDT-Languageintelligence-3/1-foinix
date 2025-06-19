@@ -3,6 +3,7 @@
 
 import Image from 'next/image';
 import { Car } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,7 @@ interface SelectCarBrandScreenProps {
 }
 
 export function SelectCarBrandScreen({ brands, onBrandSelect, onCancel, lang, t, onLanguageSwitch }: SelectCarBrandScreenProps) {
+  const router = useRouter();
   const languageButton = (
     <Button
       onClick={onLanguageSwitch}
@@ -45,9 +47,17 @@ export function SelectCarBrandScreen({ brands, onBrandSelect, onCancel, lang, t,
           <Card 
             key={brand.id} 
             className="p-4 flex flex-col items-center justify-center hover:shadow-lg cursor-pointer aspect-square transition-all hover:bg-muted/50"
-            onClick={() => onBrandSelect(brand.id)}
+            onClick={() => {
+              onBrandSelect(brand.id);
+              router.push('/select-car-model');
+            }}
             tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && onBrandSelect(brand.id)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                onBrandSelect(brand.id);
+                router.push('/select-car-model');
+              }
+            }}
             aria-label={t(brand.name)}
           >
             <Image 

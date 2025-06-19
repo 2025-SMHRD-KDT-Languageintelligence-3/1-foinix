@@ -3,6 +3,7 @@
 
 import Image from 'next/image';
 import { CarIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ interface SelectCarModelScreenProps {
 }
 
 export function SelectCarModelScreen({ brand, onModelSelect, onCancel, lang, t, onLanguageSwitch }: SelectCarModelScreenProps) {
+  const router = useRouter();
   const languageButton = (
     <Button
       onClick={onLanguageSwitch}
@@ -78,19 +80,27 @@ export function SelectCarModelScreen({ brand, onModelSelect, onCancel, lang, t, 
         {brand.models.map((model) => {
           const modelDisplayName = t(model.name);
           return (
-            <Card 
-              key={model.id} 
+            <Card
+              key={model.id}
               className={cardClasses}
-              onClick={() => onModelSelect({
-                  model: model.name, 
-                  licensePlate: 'selectCarModel.manualEntryLicensePlate', 
+              onClick={() => {
+                onModelSelect({
+                  model: model.name,
+                  licensePlate: 'selectCarModel.manualEntryLicensePlate',
                   confidence: 1.0,
-                  portLocationDescription: "selectCarModel.portLocationGeneric", 
+                  portLocationDescription: "selectCarModel.portLocationGeneric",
                   connectionImageUrl: 'https://placehold.co/600x400.png', // Placeholder image, actual image size can vary
                   dataAiHint: model.dataAiHint || "electric vehicle",
-              })}
+                });
+                router.push('/preauth');
+              }}
               tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && onModelSelect({ model: model.name, licensePlate: 'selectCarModel.manualEntryLicensePlate' })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  onModelSelect({ model: model.name, licensePlate: 'selectCarModel.manualEntryLicensePlate' });
+                  router.push('/preauth');
+                }
+              }}
               aria-label={modelDisplayName}
             >
               <div className="w-full h-32 relative mb-1"> 
