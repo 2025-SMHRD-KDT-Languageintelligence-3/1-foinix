@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,6 @@ interface ManualPlateInputScreenProps {
 
 export function ManualPlateInputScreen({ onSubmit, onCancel, lang, t, onLanguageSwitch }: ManualPlateInputScreenProps) {
   const [plate, setPlate] = useState('');
-  const router = useRouter();
 
   const languageButton = (
     <Button
@@ -36,7 +34,6 @@ export function ManualPlateInputScreen({ onSubmit, onCancel, lang, t, onLanguage
     const trimmed = plate.trim().toUpperCase();
     if (trimmed) {
       onSubmit(trimmed);
-      router.push('/select-car-brand');
     }
   };
 

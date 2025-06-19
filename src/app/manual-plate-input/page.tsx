@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ManualPlateInputScreen } from '@/components/kiosk/ManualPlateInputScreen';
 import { Language, t as translateFunction } from '@/lib/translations';
+import { findVehicleByPlate } from '@/lib/vehicleLookup';
 
 export default function ManualPlateInputPage() {
   const router = useRouter();
@@ -38,7 +39,12 @@ export default function ManualPlateInputPage() {
   const handleSubmit = useCallback(
     (plate: string) => {
       console.log('License plate submitted:', plate);
-      router.push('/select-car-brand');
+      const vehicle = findVehicleByPlate(plate);
+      if (vehicle) {
+        router.push('/preauth');
+      } else {
+        router.push('/select-car-brand');
+      }
     },
     [router]
   );

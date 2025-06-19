@@ -9,6 +9,7 @@ import { Language, t as translateFunction } from '@/lib/translations';
 
 import { FullScreenCameraView } from '@/components/kiosk/FullScreenCameraView';
 import { InitialWelcomeScreen } from '@/components/kiosk/InitialWelcomeScreen';
+import { findVehicleByPlate } from '@/lib/vehicleLookup';
 // import { LiveCameraFeedScreen } from '@/components/kiosk/LiveCameraFeedScreen'; // Removed
 import { DataConsentScreen } from '@/components/kiosk/DataConsentScreen';
 import { ManualPlateInputScreen } from '@/components/kiosk/ManualPlateInputScreen';
@@ -325,16 +326,30 @@ const handleConsentDisagree = () => {
 };
 
   const handleManualPlateSubmitted = useCallback((plate: string) => {
-    setAppData(prev => ({
-      ...prev,
-      vehicleInfo: {
-        licensePlate: plate,
-        model: 'selectCarModel.unknownModel',
-        confidence: 1.0,
-      },
-      selectedBrandId: null,
-    }));
-    setKioskState('SELECT_CAR_BRAND');
+    const known = findVehicleByPlate(plate);
+    if (known) {
+      setAppData(prev => ({
+        ...prev,
+        vehicleInfo: {
+          licensePlate: plate,
+          model: `carModel.${known.brandId}.${known.modelId}`,
+          confidence: 1.0,
+        },
+        selectedBrandId: known.brandId,
+      }));
+      setKioskState('PRE_PAYMENT_AUTH');
+    } else {
+      setAppData(prev => ({
+        ...prev,
+        vehicleInfo: {
+          licensePlate: plate,
+          model: 'selectCarModel.unknownModel',
+          confidence: 1.0,
+        },
+        selectedBrandId: null,
+      }));
+      setKioskState('SELECT_CAR_BRAND');
+    }
   }, []);
 
   const handleBrandSelected = useCallback((brandId: string) => {
