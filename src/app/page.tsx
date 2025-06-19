@@ -10,6 +10,7 @@ import { FullScreenCameraView } from '@/components/kiosk/FullScreenCameraView';
 import { InitialWelcomeScreen } from '@/components/kiosk/InitialWelcomeScreen';
 // import { LiveCameraFeedScreen } from '@/components/kiosk/LiveCameraFeedScreen'; // Removed
 import { DataConsentScreen } from '@/components/kiosk/DataConsentScreen';
+import { ManualPlateInputScreen } from '@/components/kiosk/ManualPlateInputScreen';
 import { SelectCarBrandScreen } from '@/components/kiosk/SelectCarBrandScreen';
 import { SelectCarModelScreen } from '@/components/kiosk/SelectCarModelScreen';
 import { PrePaymentAuthScreen } from '@/components/kiosk/PrePaymentAuthScreen';
@@ -324,7 +325,7 @@ export default function KioskPage() {
     setKioskState('WELCOME'); 
   };
 
- const handleConsentDisagree = () => {
+const handleConsentDisagree = () => {
     // Since quick mode is removed, only standard mode logic applies here.
     if (disagreeTapCount === 0) {
         setDisagreeTapCount(1);
@@ -336,17 +337,30 @@ export default function KioskPage() {
         });
         console.log('Firebase Log (simulated): standard_mode_consent_disagree_first_tap, timestamp:', new Date().toISOString(), 'language:', appData.language);
     } else { 
-        setAppData(prev => ({ ...prev, consentSkipped: true, currentMode: 'standard' }));
+        setAppData(prev => ({ ...prev, consentSkipped: true, currentMode: 'standard', vehicleInfo: null, selectedBrandId: null }));
         console.log('Firebase Log (simulated): consent_skipped_proceed_manual, timestamp:', new Date().toISOString(), 'language:', appData.language);
         toast({
             title: t('dataConsent.toast.consentSkipped.title'),
             description: t('dataConsent.toast.consentSkipped.description'),
             duration: 5000,
         });
-        setKioskState('SELECT_CAR_BRAND'); 
+        setKioskState('MANUAL_PLATE_INPUT');
         setDisagreeTapCount(0); 
     }
 };
+
+  const handleManualPlateSubmitted = useCallback((plate: string) => {
+    setAppData(prev => ({
+      ...prev,
+      vehicleInfo: {
+        licensePlate: plate,
+        model: 'selectCarModel.unknownModel',
+        confidence: 1.0,
+      },
+      selectedBrandId: null,
+    }));
+    setKioskState('SELECT_CAR_BRAND');
+  }, []);
 
   const handleBrandSelected = useCallback((brandId: string) => {
     const brand = MOCK_CAR_BRANDS.find(b => b.id === brandId);
@@ -388,7 +402,7 @@ export default function KioskPage() {
     setAppData(prev => ({
       ...prev,
       vehicleInfo: {
-        licensePlate: modelInfo.licensePlate || t('selectCarModel.manualEntryLicensePlate'),
+        licensePlate: modelInfo.licensePlate || prev.vehicleInfo?.licensePlate || t('selectCarModel.manualEntryLicensePlate'),
         model: modelInfo.model || 'selectCarModel.unknownModel',
         confidence: modelInfo.confidence || 1.0,
         portLocationDescription: modelInfo.portLocationDescription || "selectCarModel.portLocationGeneric",
@@ -528,6 +542,8 @@ export default function KioskPage() {
         return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
       case 'DATA_CONSENT':
         return <DataConsentScreen {...screenProps} onAgree={handleConsentAgree} onDisagree={handleConsentDisagree} disagreeTapCount={disagreeTapCount} />;
+      case 'MANUAL_PLATE_INPUT':
+        return <ManualPlateInputScreen {...screenProps} onSubmit={handleManualPlateSubmitted} onCancel={resetToInitialWelcome} />;
       case 'SELECT_CAR_BRAND':
         return <SelectCarBrandScreen {...screenProps} brands={MOCK_CAR_BRANDS} onBrandSelect={handleBrandSelected} onCancel={resetToInitialWelcome} />;
       case 'SELECT_CAR_MODEL':

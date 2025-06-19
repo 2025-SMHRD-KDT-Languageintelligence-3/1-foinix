@@ -130,6 +130,12 @@ export const translations: Record<string, Record<Language, string>> = {
   "vehicleConfirmation.button.backToScan": { ko: "스캔 결과로 돌아가기", en: "Back to Scan Results" },
   "vehicleConfirmation.button.selectModel": { ko: "차종 선택하기", en: "Select Car Model" },
 
+  // === ManualPlateInputScreen ===
+  "manualPlateInput.title": { ko: "차량 번호판 입력", en: "Enter License Plate" },
+  "manualPlateInput.instruction": { ko: "차량 번호판을 입력해주세요.", en: "Please enter your vehicle's license plate." },
+  "manualPlateInput.placeholder.plate": { ko: "예: 12가3456", en: "e.g., 12GA3456" },
+  "manualPlateInput.button.submit": { ko: "번호판 제출", en: "Submit Plate" },
+
    // === PrePaymentAuthScreen ===
   "prePaymentAuth.title": { ko: "결제 인증", en: "Payment Authorization" },
   "prePaymentAuth.instruction": { ko: "결제 방법을 선택하고, 해당 방법으로 인증을 진행해주세요.", en: "Select your payment method and proceed with authorization." },

@@ -96,6 +96,7 @@ export type KioskState =
   | 'SCANNING'
   | 'ASSIGNING_SLOT'
   | 'SELECT_CAR_BRAND'
+  | 'MANUAL_PLATE_INPUT'
   | 'SELECT_CAR_MODEL'
   | 'CHARGING_ERROR';
 

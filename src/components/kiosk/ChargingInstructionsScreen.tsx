@@ -44,8 +44,8 @@ export function ChargingInstructionsScreen({ slotNumber, instructions, vehicleMo
   );
 
   return (
-    <FullScreenCard 
-      title={\`\${slotNumber}번 슬롯으로 진행하세요\`}
+    <FullScreenCard
+      title={`${slotNumber}번 슬롯으로 진행하세요`}
       bottomCenterAccessory={languageButton}
     >
       <Zap size={80} className="text-primary mb-6" />
