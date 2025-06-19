@@ -15,7 +15,7 @@ export function LocalBusinessDisplay({ lang, t }: LocalBusinessDisplayProps) {
   const router = useRouter();
 
   const handleShowAllOnMap = () => {
-    router.push('/store-map');
+    router.push('/map', { shallow: true });
   };
 
   return (

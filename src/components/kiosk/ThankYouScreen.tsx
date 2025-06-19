@@ -48,7 +48,7 @@ export function ThankYouScreen({ receiptType, onNewSession, lang, t, onLanguageS
   );
 
   const handleMore = () => {
-    router.push('/store-map');
+    router.push('/map', { shallow: true });
   };
 
   return (
