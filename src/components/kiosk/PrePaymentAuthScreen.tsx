@@ -6,14 +6,14 @@ import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 import { useTTS } from '@/hooks/useTTS';
 
 interface PrePaymentAuthScreenProps {
   onAuthSuccess: () => void;
   onCancel: () => void;
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 

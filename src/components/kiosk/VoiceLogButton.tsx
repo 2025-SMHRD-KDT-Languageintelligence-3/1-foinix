@@ -13,10 +13,6 @@ export function VoiceLogButton() {
   useEffect(() => {
     localStorage.setItem("lastVisitedBeforeLog", pathname);
   }, [pathname]);
-    const toggleMute = () => {
-      setMuted((prev) => !prev);
-    // 여기서 음성 피드백 on/off 상태를 처리할 수 있습니다.
-  };
   return (
     <>
       <Button

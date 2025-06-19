@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import type { VehicleInfo } from '@/types/kiosk';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 import { useTTS } from '@/hooks/useTTS';
 
 interface VehicleConfirmationScreenProps {
@@ -16,7 +16,7 @@ interface VehicleConfirmationScreenProps {
   onConfirm: (confirmedVehicleInfo: VehicleInfo) => void;
   onSelectCarModelManually: () => void; // 🔥 부모 컴포넌트에서 필수로 넘겨줘야 함
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 

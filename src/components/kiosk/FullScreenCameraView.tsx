@@ -2,15 +2,15 @@
 
   import React, { useEffect, useRef, useState } from 'react';
   import { useToast } from "@/hooks/use-toast";
-  import type { Language, t as TFunction } from '@/lib/translations';
+  import type { Language } from '@/lib/translations';
   import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
   import { AlertTriangle, CameraOff } from 'lucide-react';
   import { KioskButton } from './KioskButton';
 
   interface FullScreenCameraViewProps {
     lang: Language;
-    t: TFunction;
-    onProceedWithoutCamera?: () => void; 
+    t: (key: string, params?: Record<string, string | number>) => string;
+    onProceedWithoutCamera?: () => void;
   }
 
   export function FullScreenCameraView({ lang, t, onProceedWithoutCamera }: FullScreenCameraViewProps) {

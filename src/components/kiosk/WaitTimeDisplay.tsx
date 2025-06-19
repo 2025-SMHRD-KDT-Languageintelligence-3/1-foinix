@@ -7,13 +7,14 @@ import { Progress } from '@/components/ui/progress';
 import { Clock, UserCircle } from 'lucide-react'; 
 import React from 'react';
 import { cn } from '@/lib/utils'; 
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 
 interface WaitTimeDisplayProps {
-  slots?: ChargingSlot[]; 
-  currentSlotId?: string; 
+  slots?: ChargingSlot[];
+  currentSlotId?: string;
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
+  className?: string;
 }
 
 const mockSlotsData: ChargingSlot[] = [ 
@@ -22,10 +23,10 @@ const mockSlotsData: ChargingSlot[] = [
   { id: 'B1', status: 'maintenance' },
 ];
 
-export function WaitTimeDisplay({ slots = mockSlotsData, currentSlotId, lang, t }: WaitTimeDisplayProps) {
+export function WaitTimeDisplay({ slots = mockSlotsData, currentSlotId, lang, t, className }: WaitTimeDisplayProps) {
   return (
     <>
-      <div className="w-full h-full flex flex-col">
+      <div className={cn("w-full h-full flex flex-col", className)}>
         
         <div className="grid grid-cols-1 gap-6 flex-grow">
           {slots.map(slot => {

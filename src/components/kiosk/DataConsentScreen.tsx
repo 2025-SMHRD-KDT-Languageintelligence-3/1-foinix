@@ -6,7 +6,7 @@ import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
 import type { Language } from '@/lib/translations';
-import type { t as TFunction } from '@/lib/translations';
+
 import { useEffect } from 'react';
 import { useTTS } from '@/hooks/useTTS';
 import { Card, CardContent } from '@/components/ui/card'; 
@@ -18,7 +18,7 @@ interface DataConsentScreenProps {
   onDisagree: () => void;
   disagreeTapCount: number;
   lang: Language;
-  t: TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 

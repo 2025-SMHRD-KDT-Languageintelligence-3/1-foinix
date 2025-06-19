@@ -20,7 +20,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { KioskButton } from './KioskButton';
 // Removed useToast as it's no longer used directly here for staff call.
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 
 interface TroubleshootingItem {
   id: string;
@@ -38,7 +38,7 @@ const troubleshootingItemKeys: TroubleshootingItem[] = [
 
 interface TroubleshootingGuideProps {
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
 export function TroubleshootingGuide({ lang, t }: TroubleshootingGuideProps) {

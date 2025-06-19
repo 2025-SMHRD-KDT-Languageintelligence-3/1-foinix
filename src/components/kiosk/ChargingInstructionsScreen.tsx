@@ -9,7 +9,7 @@ import type { ChargingInstructions } from '@/types/kiosk';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 
 
 interface ChargingInstructionsScreenProps {
@@ -18,7 +18,7 @@ interface ChargingInstructionsScreenProps {
   vehicleModel: string;
   onStartCharging: () => void;
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 

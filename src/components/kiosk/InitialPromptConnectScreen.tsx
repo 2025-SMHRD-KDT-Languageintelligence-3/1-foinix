@@ -7,7 +7,7 @@ import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
 import type { VehicleInfo } from '@/types/kiosk';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 import { useEffect } from 'react';
 import { useTTS } from '@/hooks/useTTS';
 
@@ -16,7 +16,7 @@ interface InitialPromptConnectScreenProps {
   slotNumber: string;
   onChargerConnected: () => void;
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 

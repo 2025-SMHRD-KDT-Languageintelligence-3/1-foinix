@@ -45,7 +45,7 @@ export function VoiceRecognitionButton() {
       toast({ title: "음성 인식", description: "🎤 인식 준비 중..." });
     };
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: any) => {
   const text = Array.from(event.results)
     .map((result) => result[0].transcript)
     .join("");
@@ -100,7 +100,7 @@ export function VoiceRecognitionButton() {
 };
 
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: any) => {
       toast({
         title: "오류 발생",
         description: event.error,

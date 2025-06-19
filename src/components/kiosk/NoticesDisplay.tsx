@@ -16,9 +16,9 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { NoticeItem } from '@/types/kiosk';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 
-const mockNoticeKeys: Omit<NoticeItem, 'title' | 'content'> & { titleKey: string; contentKey: string }[] = [
+const mockNoticeKeys: (Omit<NoticeItem, 'title' | 'content'> & { titleKey: string; contentKey: string })[] = [
   {
     id: 'notice1',
     titleKey: 'notice1.title',
@@ -51,7 +51,7 @@ const mockNoticeKeys: Omit<NoticeItem, 'title' | 'content'> & { titleKey: string
 
 interface NoticesDisplayProps {
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
 export function NoticesDisplay({ lang, t }: NoticesDisplayProps) {

@@ -6,7 +6,7 @@ import { FullScreenCard } from './FullScreenCard';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 import React from 'react';
 
 interface ScanningScreenProps {
@@ -14,7 +14,7 @@ interface ScanningScreenProps {
     messageKey?: string;
     displayIcon?: React.ReactNode;
     lang: Language;
-    t: typeof TFunction;
+    t: (key: string, params?: Record<string, string | number>) => string;
     onLanguageSwitch: () => void;
 }
 
