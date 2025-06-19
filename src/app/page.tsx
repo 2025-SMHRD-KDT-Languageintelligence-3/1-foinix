@@ -437,9 +437,20 @@ const handleConsentDisagree = () => {
         }
     }
 
-    setKioskState('SELECT_CONNECTOR_TYPE');
+    if (appData.currentMode === 'quick') {
+      const autoConnectorType = appData.vehicleInfo?.recommendedConnectorType || 'ccs_combo_2';
+      const connector = MOCK_AVAILABLE_CONNECTORS.find(c => c.id === autoConnectorType);
+      const connectorName = connector ? t(connector.name) : autoConnectorType;
+      toast({
+        title: t('selectConnectorType.quickModeAutoSelect', { connectorName }),
+      });
+      setAppData(prev => ({ ...prev, selectedConnectorType: autoConnectorType }));
+      setKioskState('INITIAL_PROMPT_CONNECT');
+    } else {
+      setKioskState('SELECT_CONNECTOR_TYPE');
+    }
 
-  }, [appData.assignedSlotId, appData.currentSlots, appData.language, t, toast]);
+  }, [appData.assignedSlotId, appData.currentSlots, appData.currentMode, appData.vehicleInfo, appData.language, t, toast]);
 
   const handleConnectorTypeSelected = useCallback((connectorTypeId: string) => {
     setAppData(prev => ({ ...prev, selectedConnectorType: connectorTypeId }));
