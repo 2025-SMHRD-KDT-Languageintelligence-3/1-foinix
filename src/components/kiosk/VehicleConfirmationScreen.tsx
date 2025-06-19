@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { CheckCircle2, Edit3 } from 'lucide-react';
 import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
@@ -30,13 +29,12 @@ export function VehicleConfirmationScreen({
   t,
   onLanguageSwitch,
 }: VehicleConfirmationScreenProps) {
-  const router = useRouter();
   const [isManualEntryMode, setIsManualEntryMode] = useState(false);
   const [manualPlateInput, setManualPlateInput] = useState("");
   const { speak } = useTTS();
   useAutoSTT({
     '맞아': () => onConfirm(vehicleInfo),
-    '아니야': () => router.push('/manual-plate-input'),
+    '아니야': () => setIsManualEntryMode(true),
   });
   useEffect(() => {
     speak("차량 번호가 맞으신가요? 예 또는 아니요를 눌러주세요.");
@@ -135,7 +133,7 @@ export function VehicleConfirmationScreen({
       <div className="w-full max-w-md space-y-4">
         <KioskButton onClick={() => onConfirm(vehicleInfo)} label={t("vehicleConfirmation.button.confirm")} icon={<CheckCircle2 />} />
         <KioskButton
-          onClick={() => router.push('/manual-plate-input')}
+          onClick={() => setIsManualEntryMode(true)}
           label={t("vehicleConfirmation.button.manualEntry")}
           variant="outline"
           icon={<Edit3 />}

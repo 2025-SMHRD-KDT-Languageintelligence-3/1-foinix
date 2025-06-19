@@ -291,7 +291,26 @@ export default function KioskPage() {
 
     console.log('Firebase Log (simulated): standard_mode_scan_simulated, vehicle_plate:', scannedVehicleInfo.licensePlate, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
     
-    setKioskState('DATA_CONSENT'); 
+    setKioskState('DATA_CONSENT');
+  };
+
+  const handleProceedQuickStart = () => {
+    setAppData(prev => ({ ...prev, currentMode: 'quick' }));
+
+    const scannedVehicleInfo: VehicleInfo = {
+      ...MOCK_VEHICLE_DATA,
+      licensePlate: `AI-QCK-${Math.floor(Math.random() * 9000) + 1000}`,
+      confidence: 0.98,
+    };
+
+    setAppData(prev => ({
+      ...prev,
+      vehicleInfo: scannedVehicleInfo,
+    }));
+
+    console.log('Firebase Log (simulated): quick_start_scan_simulated, vehicle_plate:', scannedVehicleInfo.licensePlate, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
+
+    setKioskState('DATA_CONSENT');
   };
 
   const handleConsentAgree = () => {
@@ -527,7 +546,7 @@ const handleConsentDisagree = () => {
       case 'PRE_PROCESSING_CAMERA_FEED':
         return <FullScreenCameraView {...screenProps} onProceedWithoutCamera={handleProceedFromFullScreenCamera} />;
       case 'INITIAL_WELCOME':
-        return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
+        return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuickStart={handleProceedQuickStart} />;
       case 'DATA_CONSENT':
         return <DataConsentScreen {...screenProps} onAgree={handleConsentAgree} onDisagree={handleConsentDisagree} disagreeTapCount={disagreeTapCount} />;
       case 'MANUAL_PLATE_INPUT':
@@ -541,7 +560,7 @@ const handleConsentDisagree = () => {
         if (!appData.vehicleInfo) {
              console.warn("Missing vehicleInfo for VEHICLE_CONFIRMATION. Resetting.");
              resetToInitialWelcome();
-             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onSelectCarModelManually={() => setKioskState('SELECT_CAR_BRAND')}/>;
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuickStart={handleProceedQuickStart} />;
         }
         return (
           <VehicleConfirmationScreen
@@ -563,14 +582,14 @@ const handleConsentDisagree = () => {
                 return <SlotAssignmentScreen {...screenProps} isQueue={!appData.currentSlots.some(s => s.status === 'available')}/>; 
              }
              resetToInitialWelcome();
-             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuickStart={handleProceedQuickStart} />;
         }
         return <InitialPromptConnectScreen {...screenProps} vehicleInfo={appData.vehicleInfo} slotNumber={appData.assignedSlotId} onChargerConnected={handleChargerConnected} />;
       case 'DETECTING_CONNECTION':
         if (!appData.vehicleInfo) { 
              console.warn("Missing vehicle info for DETECTING_CONNECTION, showing SlotAssignment.");
              resetToInitialWelcome(); 
-             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuickStart={handleProceedQuickStart} />;
         }
         return <DetectConnectionScreen {...screenProps} vehicleModelKey={appData.vehicleInfo.model} onDetectionComplete={handleConnectionDetected} />;
       case 'CONFIRM_START_CHARGING':
@@ -579,7 +598,7 @@ const handleConsentDisagree = () => {
         if (!appData.assignedSlotId || !appData.selectedConnectorType || !appData.vehicleInfo) {
           toast({ title: t('toast.error.noSlotInfo.title'), description: t('toast.error.noSlotInfo.description'), variant: "destructive" });
           resetToInitialWelcome();
-          return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
+          return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuickStart={handleProceedQuickStart} />;
         }
         return <ChargingInProgressScreen
                   {...screenProps}
@@ -597,7 +616,7 @@ const handleConsentDisagree = () => {
              console.error("Final bill is null in CHARGING_COMPLETE_PAYMENT state. Resetting.");
              toast({ title: t('error.genericTitle'), description: "Error processing payment details.", variant: "destructive" });
              resetToInitialWelcome();
-             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuickStart={handleProceedQuickStart} />;
          }
         return <PaymentScreen {...screenProps} bill={appData.finalBill} onPaymentProcessed={handlePaymentProcessed} />;
       case 'VACATE_SLOT_REMINDER':
@@ -614,7 +633,7 @@ const handleConsentDisagree = () => {
       default:
         console.warn('Unhandled kiosk state: ' + kioskState + ', resetting to initial welcome.');
         resetToInitialWelcome(); 
-        return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
+        return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onProceedQuickStart={handleProceedQuickStart} />;
     }
   };
 
