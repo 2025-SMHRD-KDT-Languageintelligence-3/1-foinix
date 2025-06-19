@@ -6,14 +6,14 @@ import { Camera, Loader2, AlertTriangle } from 'lucide-react';
 import { FullScreenCard } from './FullScreenCard';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 import { useToast } from "@/hooks/use-toast";
 import { KioskButton } from './KioskButton';
 
 interface LiveCameraFeedScreenProps {
   onScanComplete: () => void;
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 

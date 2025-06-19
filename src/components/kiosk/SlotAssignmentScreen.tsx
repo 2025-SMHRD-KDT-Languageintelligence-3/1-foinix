@@ -6,12 +6,12 @@ import { FullScreenCard } from './FullScreenCard';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 
 interface SlotAssignmentScreenProps {
   isQueue?: boolean;
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 

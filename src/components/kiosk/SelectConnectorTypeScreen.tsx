@@ -8,7 +8,7 @@ import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
 import type { ConnectorTypeInfo, VehicleInfo } from '@/types/kiosk';
 import { Badge } from '@/components/ui/badge';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 import { useTTS } from '@/hooks/useTTS'; // ✅ TTS 훅 import
 
 interface SelectConnectorTypeScreenProps {
@@ -17,7 +17,7 @@ interface SelectConnectorTypeScreenProps {
   onConnectorSelect: (connectorTypeId: string) => void;
   onCancel: () => void;
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 

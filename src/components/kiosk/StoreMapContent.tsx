@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-const categoryMap = {
+const categoryMap: Record<string, string> = {
   "🍴 식당": "FD6",
   "☕ 카페": "CE7",
   "🏪 편의점": "CS2",

@@ -4,7 +4,7 @@
 import { Lightbulb, Leaf } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState, useEffect } from 'react';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 import { cn } from '@/lib/utils';
 
 interface Tip {
@@ -22,7 +22,7 @@ const tips: Tip[] = [
 
 interface ChargingTipsDisplayProps {
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   className?: string;
 }
 

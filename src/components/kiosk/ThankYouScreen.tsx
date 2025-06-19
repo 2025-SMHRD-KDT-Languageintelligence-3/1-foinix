@@ -8,14 +8,14 @@ import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 import { useTTS } from '@/hooks/useTTS';
 
 interface ThankYouScreenProps {
   receiptType?: 'sms' | 'none';
   onNewSession: () => void;
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 
@@ -53,7 +53,7 @@ export function ThankYouScreen({ receiptType, onNewSession, lang, t, onLanguageS
   );
 
   const handleMore = () => {
-    router.push('/map', { shallow: true });
+    router.push('/map');
   };
 
   return (

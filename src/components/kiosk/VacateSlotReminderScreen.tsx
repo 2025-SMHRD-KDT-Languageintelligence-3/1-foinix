@@ -6,12 +6,12 @@ import { AlertTriangle, Clock } from 'lucide-react';
 import { FullScreenCard } from './FullScreenCard';
 import { Button } from '@/components/ui/button';
 import { LocalBusinessDisplay } from './LocalBusinessDisplay';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 
 interface VacateSlotReminderScreenProps {
   onDismiss: () => void; 
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   isQueueNotEmpty?: boolean; 
   onLanguageSwitch: () => void;
 }

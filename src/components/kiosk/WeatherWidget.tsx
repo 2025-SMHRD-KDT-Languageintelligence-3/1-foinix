@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sun, Cloud, CloudRain, CloudSnow, CloudFog, Wind, Zap, Thermometer, Droplets, CloudSun, MountainSnow, CloudDrizzle, Haze, AlertTriangle } from 'lucide-react';
@@ -19,7 +19,7 @@ interface WeatherData {
 
 interface WeatherWidgetProps {
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   className?: string;
 }
 
@@ -51,7 +51,11 @@ interface SimulatedAqiApiResponse {
   }>;
 }
 
-const getWeatherIcon = (conditionCode: number, lang: Language, t: TFunction): { icon: React.ReactNode, descriptionKey: string } => {
+const getWeatherIcon = (
+  conditionCode: number,
+  lang: Language,
+  t: (key: string, params?: Record<string, string | number>) => string,
+): { icon: React.ReactNode; descriptionKey: string } => {
   if (conditionCode >= 200 && conditionCode < 300) return { icon: <Zap />, descriptionKey: "weather.description.thunderstorm" };
   if (conditionCode >= 300 && conditionCode < 400) return { icon: <CloudDrizzle />, descriptionKey: "weather.description.lightRain" };
   if (conditionCode >= 500 && conditionCode < 600) return { icon: <CloudRain />, descriptionKey: "weather.description.rain" };

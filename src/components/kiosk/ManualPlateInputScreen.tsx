@@ -6,13 +6,13 @@ import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Edit3 } from 'lucide-react';
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 
 interface ManualPlateInputScreenProps {
   onSubmit: (plate: string) => void;
   onCancel: () => void;
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 

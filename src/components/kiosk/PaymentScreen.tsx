@@ -7,15 +7,14 @@ import { Button } from '@/components/ui/button';
 import type { BillDetails } from '@/types/kiosk'; // types/kiosk.ts 파일도 수정했음을 가정
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState, useEffect } from 'react';
-import type { Language, t as TFunction } from '@/lib/translations'; // translations.ts 파일도 수정했음을 가정
+import type { Language } from '@/lib/translations'; // translations.ts 파일도 수정했음을 가정
 import { useTTS } from '@/hooks/useTTS';
 
 interface PaymentScreenProps {
   bill: BillDetails;
-  // 변경된 onPaymentProcessed 콜백 타입: 'sms' 대신 'print' 사용
-  onPaymentProcessed: (receiptChoice: 'print' | 'none') => void;
+  onPaymentProcessed: (receiptChoice: 'sms' | 'none') => void;
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 
@@ -84,10 +83,10 @@ export function PaymentScreen({ bill, onPaymentProcessed, lang, t, onLanguageSwi
         <p className="text-xl text-center mb-4 text-muted-foreground">{t("payment.receipt.question")}</p>
         <div className="w-full max-w-md space-y-4">
           {/* SMS 영수증 받기 버튼을 영수증 출력 버튼으로 변경 */}
-          <KioskButton 
-            onClick={() => onPaymentProcessed('print')} // 'print' 인자로 변경
-            label={t("payment.receipt.print")} // 새로운 번역 키 사용
-            icon={<Plug />} // 아이콘 변경 (필요시 프린터 아이콘으로 교체)
+          <KioskButton
+            onClick={() => onPaymentProcessed('sms')}
+            label={t("payment.receipt.print")}
+            icon={<Plug />}
           />
           {/* 기존 영수증 안 받기 버튼 */}
           <KioskButton 

@@ -4,18 +4,19 @@ import { Button } from '@/components/ui/button';
 import { Map } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import CarbonComparison from './CarbonComparison'; // 새로 만든 컴포넌트 import
-import type { Language, t as TFunction } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 
 interface LocalBusinessDisplayProps {
   lang: Language;
-  t: typeof TFunction;
+  t: (key: string, params?: Record<string, string | number>) => string;
+  from?: string;
 }
 
-export function LocalBusinessDisplay({ lang, t }: LocalBusinessDisplayProps) {
+export function LocalBusinessDisplay({ lang, t, from }: LocalBusinessDisplayProps) {
   const router = useRouter();
 
   const handleShowAllOnMap = () => {
-    router.push('/map', { shallow: true });
+    router.push('/map');
   };
 
   return (
