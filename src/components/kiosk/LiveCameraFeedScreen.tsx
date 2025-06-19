@@ -26,7 +26,7 @@ export function LiveCameraFeedScreen({ onScanComplete, lang, t, onLanguageSwitch
     const getCameraPermission = async () => {
       if (typeof navigator.mediaDevices?.getUserMedia !== 'function') {
         console.warn("Camera API not supported in this browser/context.");
-        setHasCameraPermission(false); 
+        setHasCameraPermission(false);
         toast({
           variant: 'destructive',
           title: t('liveCameraFeed.error.apiNotSupported.title'),
@@ -34,8 +34,21 @@ export function LiveCameraFeedScreen({ onScanComplete, lang, t, onLanguageSwitch
         });
         return;
       }
+
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const hasCamera = devices.some((device) => device.kind === 'videoinput');
+        if (!hasCamera) {
+          throw new Error('No camera device found');
+        }
+
+        const stream = await navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .catch((e) => {
+            console.error('Camera access denied or not available', e);
+            throw e;
+          });
+
         setHasCameraPermission(true);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;

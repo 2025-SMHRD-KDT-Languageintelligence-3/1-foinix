@@ -134,6 +134,31 @@ export function ChargingInProgressScreen({
     onSimulateErrorRef.current = onSimulateError;
   }, [onSimulateError]);
 
+  const handleManualStop = () => {
+    if (chargeIntervalRef.current) {
+      clearInterval(chargeIntervalRef.current);
+      chargeIntervalRef.current = null;
+    }
+
+    if (!isInternallyComplete) {
+      setIsInternallyComplete(true);
+      // Pass the most recent currentBill state directly for manual stop
+      setTimeout(() => onStopChargingRef.current(currentBill), 0);
+    }
+  };
+
+  const handleSimulateErrorClick = () => {
+    if (chargeIntervalRef.current) {
+      clearInterval(chargeIntervalRef.current);
+      chargeIntervalRef.current = null;
+    }
+    if (!isInternallyComplete) {
+      setIsInternallyComplete(true);
+    }
+
+    onSimulateErrorRef.current("chargingError.messageCableDisconnect");
+  };
+
   const [isStateLoaded, setIsStateLoaded] = useState(false);
 
   const [showConnectorWarning, setShowConnectorWarning] = useState(false);
@@ -270,31 +295,6 @@ export function ChargingInProgressScreen({
       }
     };
   }, [estimatedTotalTimeMinutes, costPerKwh, isInternallyComplete]);
-
-  const handleManualStop = () => {
-    if (chargeIntervalRef.current) {
-      clearInterval(chargeIntervalRef.current);
-      chargeIntervalRef.current = null;
-    }
-
-    if (!isInternallyComplete) {
-      setIsInternallyComplete(true);
-      // Pass the most recent currentBill state directly for manual stop
-      setTimeout(() => onStopChargingRef.current(currentBill), 0);
-    }
-  };
-
-  const handleSimulateErrorClick = () => {
-    if (chargeIntervalRef.current) {
-      clearInterval(chargeIntervalRef.current);
-      chargeIntervalRef.current = null;
-    }
-    if (!isInternallyComplete) {
-      setIsInternallyComplete(true);
-    }
-
-    onSimulateErrorRef.current("chargingError.messageCableDisconnect");
-  };
 
   useAutoSTT({
     '충전중지': handleManualStop,
