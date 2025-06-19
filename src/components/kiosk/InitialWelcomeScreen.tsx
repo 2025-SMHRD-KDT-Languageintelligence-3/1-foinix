@@ -9,22 +9,21 @@ import type { Language } from '@/lib/translations';
 import { useEffect } from 'react';
 import { useTTS } from '@/hooks/useTTS';
 import { useAutoSTT } from '@/hooks/useAutoSTT';
-import { useRouter } from 'next/navigation';
 
 interface InitialWelcomeScreenProps {
   onProceedStandard: () => void;
+  onProceedQuickStart: () => void;
   lang: Language;
   t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 
-export function InitialWelcomeScreen({ onProceedStandard, lang, t, onLanguageSwitch }: InitialWelcomeScreenProps) {
-  const router = useRouter();
+export function InitialWelcomeScreen({ onProceedStandard, onProceedQuickStart, lang, t, onLanguageSwitch }: InitialWelcomeScreenProps) {
   const { speak } = useTTS();
   useAutoSTT({
     '서비스시작': onProceedStandard,
     '시작': onProceedStandard,
-    '빠른시작': () => router.push('/manual-plate-input'),
+    '빠른시작': onProceedQuickStart,
   });
   useEffect(() => {
     speak("EV 충전 서비스를 시작합니다. 화면을 터치하거나 ‘시작’이라고 말씀해주세요.");
@@ -56,7 +55,7 @@ export function InitialWelcomeScreen({ onProceedStandard, lang, t, onLanguageSwi
           icon={<PlayCircle />}
         />
         <KioskButton
-          onClick={() => router.push('/manual-plate-input')}
+          onClick={onProceedQuickStart}
           label={t("initialWelcome.proceedButtonQuick")}
           icon={<Zap />}
         />
