@@ -320,7 +320,7 @@ export default function StoreMapContent() {
         }}
       >
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/')}
           style={{
             width: "360px",
             padding: "14px 0",

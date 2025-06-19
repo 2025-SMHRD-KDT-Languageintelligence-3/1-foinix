@@ -53,6 +53,9 @@ export function ThankYouScreen({ receiptType, onNewSession, lang, t, onLanguageS
   );
 
   const handleMore = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('kioskReturnState', 'THANK_YOU');
+    }
     router.push('/map');
   };
 
