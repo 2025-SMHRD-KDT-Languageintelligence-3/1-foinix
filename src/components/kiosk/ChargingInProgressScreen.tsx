@@ -1,22 +1,21 @@
-
 "use client";
 
-import { Zap, Hourglass, AlertCircle } from 'lucide-react';
-import { FullScreenCard } from './FullScreenCard';
-import { KioskButton } from './KioskButton';
-import { Button } from '@/components/ui/button';
-import { LocalBusinessDisplay } from './LocalBusinessDisplay';
-import { WaitTimeDisplay } from './WaitTimeDisplay';
-import { ChargingTipsDisplay } from './ChargingTipsDisplay';
-import { TroubleshootingGuide } from './TroubleshootingGuide';
-import { NoticesDisplay } from './NoticesDisplay';
-import type { BillDetails, ChargingSlot } from '@/types/kiosk';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { WeatherWidget } from './WeatherWidget';
-import { useEffect, useState, useRef } from 'react';
-import type { Language } from '@/lib/translations';
-import { t as TFunction } from '@/lib/translations';
-import { cn } from '@/lib/utils';
+import { Zap, Hourglass, AlertCircle } from "lucide-react";
+import { FullScreenCard } from "./FullScreenCard";
+import { KioskButton } from "./KioskButton";
+import { Button } from "@/components/ui/button";
+import { LocalBusinessDisplay } from "./LocalBusinessDisplay";
+import { WaitTimeDisplay } from "./WaitTimeDisplay";
+import { ChargingTipsDisplay } from "./ChargingTipsDisplay";
+import { TroubleshootingGuide } from "./TroubleshootingGuide";
+import { NoticesDisplay } from "./NoticesDisplay";
+import type { BillDetails, ChargingSlot } from "@/types/kiosk";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { WeatherWidget } from "./WeatherWidget";
+import { useEffect, useState, useRef } from "react";
+import type { Language } from "@/lib/translations";
+import { t as TFunction } from "@/lib/translations";
+import { cn } from "@/lib/utils";
 
 interface ChargingInProgressScreenProps {
   slotNumber: string;
@@ -38,12 +37,13 @@ interface ChargingTipsDisplayProps {
 
 const KWH_PER_SECOND = 0.01;
 const MAX_KW_CAPACITY_FOR_PROGRESS_BAR = 70;
-const SESSION_STORAGE_KEY = 'kioskChargingProgressState';
+const SESSION_STORAGE_KEY = "kioskChargingProgressState";
 
 interface StoredChargingState {
   currentBill: BillDetails;
   elapsedTime: number;
   currentChargePercentage: number;
+  startTimestamp: number;
 }
 
 export function ChargingInProgressScreen({
@@ -57,17 +57,20 @@ export function ChargingInProgressScreen({
   lang,
   t,
   onLanguageSwitch,
-  selectedConnectorType
+  selectedConnectorType,
 }: ChargingInProgressScreenProps) {
   const loadStateFromSessionStorage = (): StoredChargingState | null => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const saved = sessionStorage.getItem(SESSION_STORAGE_KEY);
       if (saved) {
         try {
           return JSON.parse(saved) as StoredChargingState;
         } catch (e) {
-          console.error("Failed to parse charging state from sessionStorage", e);
-          sessionStorage.removeItem(SESSION_STORAGE_KEY); 
+          console.error(
+            "Failed to parse charging state from sessionStorage",
+            e,
+          );
+          sessionStorage.removeItem(SESSION_STORAGE_KEY);
           return null;
         }
       }
@@ -75,28 +78,37 @@ export function ChargingInProgressScreen({
     return null;
   };
 
+  const savedState = loadStateFromSessionStorage();
+
   const [currentBill, setCurrentBill] = useState<BillDetails>(() => {
-    const savedState = loadStateFromSessionStorage();
     return savedState?.currentBill || initialBill;
   });
 
+  const startTimestampRef = useRef<number>(
+    savedState?.startTimestamp ?? Date.now(),
+  );
+
   const [elapsedTime, setElapsedTime] = useState<number>(() => {
-    const savedState = loadStateFromSessionStorage();
     return savedState?.elapsedTime || 0;
   });
 
-  const [currentChargePercentage, setCurrentChargePercentage] = useState<number>(() => {
-    const savedState = loadStateFromSessionStorage();
-    return savedState?.currentChargePercentage || 0;
-  });
+  const [currentChargePercentage, setCurrentChargePercentage] =
+    useState<number>(() => {
+      const savedState = loadStateFromSessionStorage();
+      return savedState?.currentChargePercentage || 0;
+    });
 
-  const [isInternallyComplete, setIsInternallyComplete] = useState<boolean>(() => {
-    const savedState = loadStateFromSessionStorage();
-    return savedState?.currentChargePercentage !== undefined ? savedState.currentChargePercentage >= 100 : false;
-  });
+  const [isInternallyComplete, setIsInternallyComplete] = useState<boolean>(
+    () => {
+      const savedState = loadStateFromSessionStorage();
+      return savedState?.currentChargePercentage !== undefined
+        ? savedState.currentChargePercentage >= 100
+        : false;
+    },
+  );
 
   const chargeIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const finalBillForCompletionRef = useRef(currentBill); 
+  const finalBillForCompletionRef = useRef(currentBill);
 
   const onChargingCompleteRef = useRef(onChargingComplete);
   const onStopChargingRef = useRef(onStopCharging);
@@ -114,7 +126,6 @@ export function ChargingInProgressScreen({
     onSimulateErrorRef.current = onSimulateError;
   }, [onSimulateError]);
 
-  
   const [isStateLoaded, setIsStateLoaded] = useState(false);
 
   const [showConnectorWarning, setShowConnectorWarning] = useState(false);
@@ -126,46 +137,48 @@ export function ChargingInProgressScreen({
   }, []);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const saved = sessionStorage.getItem(SESSION_STORAGE_KEY);
       if (saved) {
         try {
           const parsed = JSON.parse(saved) as StoredChargingState;
           if (parsed.currentBill) setCurrentBill(parsed.currentBill);
-          if (typeof parsed.elapsedTime === 'number') setElapsedTime(parsed.elapsedTime);
-          if (typeof parsed.currentChargePercentage === 'number') {
+          if (typeof parsed.elapsedTime === "number")
+            setElapsedTime(parsed.elapsedTime);
+          if (typeof parsed.currentChargePercentage === "number") {
             setCurrentChargePercentage(parsed.currentChargePercentage);
             setIsInternallyComplete(parsed.currentChargePercentage >= 100);
           }
+          if (typeof parsed.startTimestamp === "number") {
+            startTimestampRef.current = parsed.startTimestamp;
+          }
         } catch (e) {
-          console.error('충전 상태 복원 실패:', e);
+          console.error("충전 상태 복원 실패:", e);
           sessionStorage.removeItem(SESSION_STORAGE_KEY);
         }
       }
       setIsStateLoaded(true);
     }
   }, []);
-  
+
   useEffect(() => {
     if (!isStateLoaded) return;
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const stateToSave: StoredChargingState = {
         currentBill,
         elapsedTime,
         currentChargePercentage,
+        startTimestamp: startTimestampRef.current,
       };
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(stateToSave));
     }
   }, [currentBill, elapsedTime, currentChargePercentage, isStateLoaded]);
-  ;
-
-
   let costPerKwh: number;
   switch (selectedConnectorType) {
-    case 'ac_type_1':
+    case "ac_type_1":
       costPerKwh = 200;
       break;
-    case 'ccs_combo_2':
+    case "ccs_combo_2":
       costPerKwh = 300;
       break;
     default:
@@ -186,23 +199,22 @@ export function ChargingInProgressScreen({
     }
 
     const updateCharge = () => {
-      setElapsedTime(prevTime => {
-        const updatedTime = prevTime + 1;
+      const secondsElapsed = Math.floor(
+        (Date.now() - startTimestampRef.current) / 1000,
+      );
+      setElapsedTime(secondsElapsed);
 
-        setCurrentBill(prevBill => {
-          const newKwh = prevBill.kwhUsed + KWH_PER_SECOND;
-          return {
-            kwhUsed: parseFloat(newKwh.toFixed(2)),
-            durationMinutes: parseFloat((updatedTime / 60).toFixed(2)),
-            totalCost: parseFloat((newKwh * costPerKwh).toFixed(0)),
-          };
-        });
-
-        return updatedTime;
+      setCurrentBill((prevBill) => {
+        const newKwh = prevBill.kwhUsed + KWH_PER_SECOND;
+        return {
+          kwhUsed: parseFloat(newKwh.toFixed(2)),
+          durationMinutes: parseFloat((secondsElapsed / 60).toFixed(2)),
+          totalCost: parseFloat((newKwh * costPerKwh).toFixed(0)),
+        };
       });
 
-      setCurrentChargePercentage(prevPercent => {
-        const newPercent = prevPercent + (100 / (estimatedTotalTimeMinutes * 60));
+      setCurrentChargePercentage((prevPercent) => {
+        const newPercent = prevPercent + 100 / (estimatedTotalTimeMinutes * 60);
         if (newPercent >= 100) {
           if (chargeIntervalRef.current) {
             clearInterval(chargeIntervalRef.current);
@@ -212,12 +224,28 @@ export function ChargingInProgressScreen({
           if (!isInternallyComplete) {
             setIsInternallyComplete(true);
 
+            const secondsElapsedAtFinish =
+              Math.floor((Date.now() - startTimestampRef.current) / 1000) + 1;
             finalBillForCompletionRef.current = {
-              kwhUsed: parseFloat((currentBill.kwhUsed + KWH_PER_SECOND).toFixed(2)),
-              durationMinutes: parseFloat(((elapsedTime + 1) / 60).toFixed(2)),
-              totalCost: parseFloat(((currentBill.kwhUsed + KWH_PER_SECOND) * costPerKwh).toFixed(0)),
+              kwhUsed: parseFloat(
+                (currentBill.kwhUsed + KWH_PER_SECOND).toFixed(2),
+              ),
+              durationMinutes: parseFloat(
+                (secondsElapsedAtFinish / 60).toFixed(2),
+              ),
+              totalCost: parseFloat(
+                ((currentBill.kwhUsed + KWH_PER_SECOND) * costPerKwh).toFixed(
+                  0,
+                ),
+              ),
             };
-            setTimeout(() => onChargingCompleteRef.current(finalBillForCompletionRef.current), 0);
+            setTimeout(
+              () =>
+                onChargingCompleteRef.current(
+                  finalBillForCompletionRef.current,
+                ),
+              0,
+            );
           }
           return 100;
         }
@@ -240,8 +268,8 @@ export function ChargingInProgressScreen({
       clearInterval(chargeIntervalRef.current);
       chargeIntervalRef.current = null;
     }
-    
-    if (!isInternallyComplete) { 
+
+    if (!isInternallyComplete) {
       setIsInternallyComplete(true);
       // Pass the most recent currentBill state directly for manual stop
       setTimeout(() => onStopChargingRef.current(currentBill), 0);
@@ -254,31 +282,43 @@ export function ChargingInProgressScreen({
       chargeIntervalRef.current = null;
     }
     if (!isInternallyComplete) {
-      setIsInternallyComplete(true); 
+      setIsInternallyComplete(true);
     }
-    
+
     onSimulateErrorRef.current("chargingError.messageCableDisconnect");
   };
 
   const displayPercentage = Math.min(currentChargePercentage, 100);
-  const remainingTimeMinutes = Math.max(0, estimatedTotalTimeMinutes * ( (100 - displayPercentage) / 100 ) );
+  const remainingTimeMinutes = Math.max(
+    0,
+    estimatedTotalTimeMinutes * ((100 - displayPercentage) / 100),
+  );
 
-
-  const originalCurrentSlotData = allSlots.find(slot => slot.id === slotNumber);
+  const originalCurrentSlotData = allSlots.find(
+    (slot) => slot.id === slotNumber,
+  );
   let activeSlotForWaitTimeDisplay: ChargingSlot | undefined;
 
   if (originalCurrentSlotData) {
-    const liveChargeKW = (displayPercentage / 100) * MAX_KW_CAPACITY_FOR_PROGRESS_BAR;
+    const liveChargeKW =
+      (displayPercentage / 100) * MAX_KW_CAPACITY_FOR_PROGRESS_BAR;
 
     let liveEstimatedCompletionTimeString: string;
     if (displayPercentage >= 100) {
-      liveEstimatedCompletionTimeString = t('waitTimeDisplay.completedStatus');
-    } else if (displayPercentage > 0 && remainingTimeMinutes < 1 && remainingTimeMinutes > 0) {
-      liveEstimatedCompletionTimeString = t('waitTimeDisplay.almostDone');
+      liveEstimatedCompletionTimeString = t("waitTimeDisplay.completedStatus");
+    } else if (
+      displayPercentage > 0 &&
+      remainingTimeMinutes < 1 &&
+      remainingTimeMinutes > 0
+    ) {
+      liveEstimatedCompletionTimeString = t("waitTimeDisplay.almostDone");
     } else if (remainingTimeMinutes >= 1) {
-      liveEstimatedCompletionTimeString = t('waitTimeDisplay.minutesRemaining', { minutes: Math.ceil(remainingTimeMinutes) });
+      liveEstimatedCompletionTimeString = t(
+        "waitTimeDisplay.minutesRemaining",
+        { minutes: Math.ceil(remainingTimeMinutes) },
+      );
     } else {
-      liveEstimatedCompletionTimeString = t('waitTimeDisplay.calculating');
+      liveEstimatedCompletionTimeString = t("waitTimeDisplay.calculating");
     }
 
     activeSlotForWaitTimeDisplay = {
@@ -288,8 +328,9 @@ export function ChargingInProgressScreen({
     };
   }
 
-  const slotsToShowForWaitTimeDisplay = activeSlotForWaitTimeDisplay ? [activeSlotForWaitTimeDisplay] : [];
-
+  const slotsToShowForWaitTimeDisplay = activeSlotForWaitTimeDisplay
+    ? [activeSlotForWaitTimeDisplay]
+    : [];
 
   const languageButton = (
     <Button
@@ -302,13 +343,13 @@ export function ChargingInProgressScreen({
   );
 
   return (
-    <FullScreenCard
-      bottomCenterAccessory={languageButton}
-    >
+    <FullScreenCard bottomCenterAccessory={languageButton}>
       {showConnectorWarning && (
         <div className="absolute top-4 right-4 bg-red-100 text-red-800 px-4 py-2 rounded shadow-md z-50">
-          <strong>⚠️ 경고:</strong><br />
-          커넥터를 강제로 분리하지 마세요.<br />
+          <strong>⚠️ 경고:</strong>
+          <br />
+          커넥터를 강제로 분리하지 마세요.
+          <br />
           충전 완료 후 분리해 주세요.
         </div>
       )}
@@ -324,7 +365,9 @@ export function ChargingInProgressScreen({
           <div className="w-full lg:w-[320px] flex-shrink-0 flex flex-col items-center gap-y-3 sm:gap-y-4">
             <Card className="w-full bg-secondary/10 dark:bg-card/80 shadow-lg flex flex-col">
               <CardHeader className="pb-2">
-                <CardTitle className="text-2xl text-center font-headline text-primary">{t("chargingInProgress.currentSession")}</CardTitle>
+                <CardTitle className="text-2xl text-center font-headline text-primary">
+                  {t("chargingInProgress.currentSession")}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-1 text-center pt-2 pb-3 flex-grow">
                 <div className="my-2">
@@ -346,22 +389,53 @@ export function ChargingInProgressScreen({
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-3xl sm:text-4xl font-bold text-primary">{Math.round(displayPercentage)}%</span>
-                      <span className="text-sm sm:text-base text-muted-foreground mt-1">{t("chargingInProgress.label.charged")}</span>
+                      <span className="text-3xl sm:text-4xl font-bold text-primary">
+                        {Math.round(displayPercentage)}%
+                      </span>
+                      <span className="text-sm sm:text-base text-muted-foreground mt-1">
+                        {t("chargingInProgress.label.charged")}
+                      </span>
                     </div>
                   </div>
                 </div>
-                <p className="text-lg">{t("chargingInProgress.label.energySupplied")}: <span className="font-bold text-primary">{currentBill.kwhUsed} kWh</span></p>
-                <p className="text-lg">{t("chargingInProgress.label.chargingTime")}: <span className="font-bold text-primary">{currentBill.durationMinutes} {t('payment.finalBill.durationMinutesUnit', {count: currentBill.durationMinutes})}</span></p>
-                <p className="text-lg">{t("chargingInProgress.label.estimatedCost")}: <span className="font-bold text-primary">₩{currentBill.totalCost.toLocaleString()}</span></p>
+                <p className="text-lg">
+                  {t("chargingInProgress.label.energySupplied")}:{" "}
+                  <span className="font-bold text-primary">
+                    {currentBill.kwhUsed} kWh
+                  </span>
+                </p>
+                <p className="text-lg">
+                  {t("chargingInProgress.label.chargingTime")}:{" "}
+                  <span className="font-bold text-primary">
+                    {currentBill.durationMinutes}{" "}
+                    {t("payment.finalBill.durationMinutesUnit", {
+                      count: currentBill.durationMinutes,
+                    })}
+                  </span>
+                </p>
+                <p className="text-lg">
+                  {t("chargingInProgress.label.estimatedCost")}:{" "}
+                  <span className="font-bold text-primary">
+                    ₩{currentBill.totalCost.toLocaleString()}
+                  </span>
+                </p>
                 <div className="flex items-center justify-center text-lg text-card-foreground pt-1">
-                  <Hourglass size={20} className="mr-2 text-primary"/>
-                  <span>{t("chargingInProgress.label.remainingTime", { minutes: Math.ceil(remainingTimeMinutes) })}</span>
+                  <Hourglass size={20} className="mr-2 text-primary" />
+                  <span>
+                    {t("chargingInProgress.label.remainingTime", {
+                      minutes: Math.ceil(remainingTimeMinutes),
+                    })}
+                  </span>
                 </div>
               </CardContent>
             </Card>
 
-            <KioskButton onClick={handleManualStop} label={t("chargingInProgress.button.stopCharging")} variant="destructive" className="w-full" />
+            <KioskButton
+              onClick={handleManualStop}
+              label={t("chargingInProgress.button.stopCharging")}
+              variant="destructive"
+              className="w-full"
+            />
             <KioskButton
               onClick={handleSimulateErrorClick}
               label={t("chargingError.simulateErrorButton")}
@@ -374,9 +448,19 @@ export function ChargingInProgressScreen({
 
           {/* Right Column (Slot Info, Stores, Tips) */}
           <div className="flex-grow flex flex-col gap-y-3 sm:gap-y-4">
-            <WaitTimeDisplay slots={slotsToShowForWaitTimeDisplay} currentSlotId={slotNumber} lang={lang} t={t} className="w-full" />
+            <WaitTimeDisplay
+              slots={slotsToShowForWaitTimeDisplay}
+              currentSlotId={slotNumber}
+              lang={lang}
+              t={t}
+              className="w-full"
+            />
             <LocalBusinessDisplay lang={lang} t={t} from="charging" />
-            <ChargingTipsDisplay lang={lang} t={t} className="w-full min-h-[140px] sm:min-h-[160px]" />
+            <ChargingTipsDisplay
+              lang={lang}
+              t={t}
+              className="w-full min-h-[140px] sm:min-h-[160px]"
+            />
           </div>
         </div>
       </div>
