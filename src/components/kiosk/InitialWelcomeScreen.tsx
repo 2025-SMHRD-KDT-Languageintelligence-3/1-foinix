@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import type { Language } from '@/lib/translations';
 import { useEffect } from 'react';
 import { useTTS } from '@/hooks/useTTS';
+import { useRouter } from 'next/navigation';
 
 interface InitialWelcomeScreenProps {
   onProceedStandard: () => void;
@@ -17,6 +18,7 @@ interface InitialWelcomeScreenProps {
 }
 
 export function InitialWelcomeScreen({ onProceedStandard, lang, t, onLanguageSwitch }: InitialWelcomeScreenProps) {
+  const router = useRouter();
   const { speak } = useTTS();
   useEffect(() => {
     speak("EV 충전 서비스를 시작합니다. 화면을 터치하거나 ‘시작’이라고 말씀해주세요.");
@@ -47,6 +49,12 @@ export function InitialWelcomeScreen({ onProceedStandard, lang, t, onLanguageSwi
           label={t("initialWelcome.proceedButtonStandard")}
           icon={<PlayCircle />}
         />
+        <Button
+          onClick={() => router.push('/manual-plate-input')}
+          className="w-full text-white bg-blue-800 hover:bg-blue-700"
+        >
+          ⚡ 빠른 시작
+        </Button>
       </div>
       {/* Removed the auto-switch message paragraph */}
     </FullScreenCard>
