@@ -284,11 +284,6 @@ export function ChargingInProgressScreen({
     }
   };
 
-  useAutoSTT({
-    '충전중지': handleManualStop,
-    '문제발생': handleSimulateErrorClick,
-  });
-
   const handleSimulateErrorClick = () => {
     if (chargeIntervalRef.current) {
       clearInterval(chargeIntervalRef.current);
@@ -300,6 +295,11 @@ export function ChargingInProgressScreen({
 
     onSimulateErrorRef.current("chargingError.messageCableDisconnect");
   };
+
+  useAutoSTT({
+    '충전중지': handleManualStop,
+    '문제발생': handleSimulateErrorClick,
+  });
 
   const displayPercentage = Math.min(currentChargePercentage, 100);
   const remainingTimeMinutes = Math.max(
