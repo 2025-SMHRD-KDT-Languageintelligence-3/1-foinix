@@ -76,6 +76,25 @@ export function VoiceRecognitionButton() {
   } else if (normalized.includes("설정")) {
     speak("설정 화면으로 이동합니다.");
     router.push("/settings");
+  } else if (
+    normalized.includes("다음") ||
+    normalized.includes("next") ||
+    normalized.includes("다음페이지")
+  ) {
+    const nextButton = document.querySelector(
+      'button[data-variant="default"]:not([aria-label="Start voice recognition"])'
+    ) as HTMLButtonElement | null;
+    if (nextButton) {
+      speak("다음 단계로 이동합니다.");
+      nextButton.click();
+    } else {
+      speak("다음 단계로 이동할 수 없습니다.");
+      toast({
+        title: "다음 단계 없음",
+        description: "이 화면에서는 다음 단계 버튼을 찾을 수 없습니다.",
+        variant: "destructive",
+      });
+    }
   } else {
     toast({
       title: "명령어 인식 실패",
