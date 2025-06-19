@@ -7,6 +7,7 @@ import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
 import type { Language, t as TFunction } from '@/lib/translations';
+import { useTTS } from '@/hooks/useTTS';
 
 interface ConfirmStartChargingScreenProps {
   onStart: () => void;
@@ -21,6 +22,10 @@ const COUNTDOWN_SECONDS = 10;
 export function ConfirmStartChargingScreen({ onStart, onCancel, lang, t, onLanguageSwitch }: ConfirmStartChargingScreenProps) {
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const { speak } = useTTS();
+  useEffect(() => {
+    speak("충전 준비가 완료되었습니다. 곧 충전이 시작됩니다.");
+  }, []);
 
   useEffect(() => {
     timerRef.current = setInterval(() => {

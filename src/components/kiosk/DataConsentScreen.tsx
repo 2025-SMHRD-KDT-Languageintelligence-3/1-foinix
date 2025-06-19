@@ -7,6 +7,8 @@ import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
 import type { Language } from '@/lib/translations';
 import type { t as TFunction } from '@/lib/translations';
+import { useEffect } from 'react';
+import { useTTS } from '@/hooks/useTTS';
 import { Card, CardContent } from '@/components/ui/card'; 
 // Removed CardHeader, CardTitle as they are not used for the inner card.
 
@@ -21,6 +23,10 @@ interface DataConsentScreenProps {
 }
 
 export function DataConsentScreen({ onAgree, onDisagree, disagreeTapCount, lang, t, onLanguageSwitch }: DataConsentScreenProps) {
+  const { speak } = useTTS();
+  useEffect(() => {
+    speak("개인정보 수집 및 이용에 동의해 주세요.");
+  }, []);
   const languageButton = (
     <Button
       onClick={onLanguageSwitch}

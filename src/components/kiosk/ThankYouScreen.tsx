@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Language, t as TFunction } from '@/lib/translations';
+import { useTTS } from '@/hooks/useTTS';
 
 interface ThankYouScreenProps {
   receiptType?: 'sms' | 'none';
@@ -23,6 +24,10 @@ const AUTO_RESET_SECONDS = 60;
 export function ThankYouScreen({ receiptType, onNewSession, lang, t, onLanguageSwitch }: ThankYouScreenProps) {
   const router = useRouter();
   const [countdown, setCountdown] = useState(AUTO_RESET_SECONDS);
+  const { speak } = useTTS();
+  useEffect(() => {
+    speak('이용해 주셔서 감사합니다. 안전 운전하세요.');
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {

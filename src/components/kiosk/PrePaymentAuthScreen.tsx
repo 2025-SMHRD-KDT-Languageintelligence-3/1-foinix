@@ -5,8 +5,9 @@ import { CreditCard, Nfc } from 'lucide-react';
 import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Language, t as TFunction } from '@/lib/translations';
+import { useTTS } from '@/hooks/useTTS';
 
 interface PrePaymentAuthScreenProps {
   onAuthSuccess: () => void;
@@ -19,6 +20,10 @@ interface PrePaymentAuthScreenProps {
 export function PrePaymentAuthScreen({ onAuthSuccess, onCancel, lang, t, onLanguageSwitch }: PrePaymentAuthScreenProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingMethod, setProcessingMethod] = useState<'card' | 'nfc' | null>(null);
+  const { speak } = useTTS();
+  useEffect(() => {
+    speak("결제를 진행하기 전에 인증을 완료해 주세요.");
+  }, []);
 
   const handleSimulatePayment = (method: 'card' | 'nfc') => {
     setProcessingMethod(method);
