@@ -11,6 +11,7 @@ import type { CarBrand } from '@/types/kiosk';
 import { Card } from '@/components/ui/card';
 import type { Language } from '@/lib/translations';
 import { useAutoSTT, STTCommands } from '@/hooks/useAutoSTT';
+import { t as coreTranslate } from '@/lib/translations';
 
 interface SelectCarBrandScreenProps {
   brands: CarBrand[];
@@ -23,9 +24,13 @@ interface SelectCarBrandScreenProps {
 
 export function SelectCarBrandScreen({ brands, onBrandSelect, onCancel, lang, t, onLanguageSwitch }: SelectCarBrandScreenProps) {
   const router = useRouter();
+  const translate = typeof t === 'function'
+    ? t
+    : (key: string, params?: Record<string, string | number>) => coreTranslate(lang, key, params);
+
   const commandMap: STTCommands = {};
   brands.forEach((brand) => {
-    const phrase = t(brand.name);
+    const phrase = translate(brand.name);
     commandMap[phrase] = () => {
       onBrandSelect(brand.id);
       router.push('/select-car-model');
@@ -39,18 +44,18 @@ export function SelectCarBrandScreen({ brands, onBrandSelect, onCancel, lang, t,
       variant="outline"
       className="bg-white text-[#1b1f3b] border border-gray-300 rounded-lg text-sm font-bold py-2 px-4 shadow-md hover:bg-gray-100"
     >
-      {t("button.languageSwitch")}
+      {translate("button.languageSwitch")}
     </Button>
   );
 
   return (
     <FullScreenCard 
-      title={t("selectCarBrand.title")}
+      title={translate("selectCarBrand.title")}
       bottomCenterAccessory={languageButton}
     >
       <Car size={80} className="text-primary mb-6" />
       <p className="text-xl sm:text-2xl text-center mb-10 text-muted-foreground">
-        {t("selectCarBrand.instruction")}
+        {translate("selectCarBrand.instruction")}
       </p>
       
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-4xl mb-10">
@@ -69,22 +74,22 @@ export function SelectCarBrandScreen({ brands, onBrandSelect, onCancel, lang, t,
                 router.push('/select-car-model');
               }
             }}
-            aria-label={t(brand.name)}
+            aria-label={translate(brand.name)}
           >
             <Image 
               src={brand.logoUrl} 
-              alt={t(brand.name) + " " + t("logo")} 
+              alt={translate(brand.name) + " " + translate("logo")}
               width={100} 
               height={100} 
               className="object-contain"
               data-ai-hint={brand.dataAiHint || 'car logo'}
             />
-            <p className="mt-3 text-lg font-semibold text-center">{t(brand.name)}</p>
+            <p className="mt-3 text-lg font-semibold text-center">{translate(brand.name)}</p>
           </Card>
         ))}
       </div>
 
-      <KioskButton onClick={onCancel} label={t("selectCarBrand.button.cancel")} variant="outline" className="max-w-sm" />
+      <KioskButton onClick={onCancel} label={translate("selectCarBrand.button.cancel")} variant="outline" className="max-w-sm" />
     </FullScreenCard>
   );
 }
