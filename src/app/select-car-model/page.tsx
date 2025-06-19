@@ -11,6 +11,7 @@ export default function SelectCarModelPage() {
   const searchParams = useSearchParams();
   const [lang, setLang] = useState<Language>('ko');
   const [isClient, setIsClient] = useState(false);
+  const [brandId, setBrandId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -21,7 +22,17 @@ export default function SelectCarModelPage() {
     } else {
       document.documentElement.lang = 'ko';
     }
-  }, []);
+    const paramId = searchParams.get('brand');
+    if (paramId) {
+      setBrandId(paramId);
+      sessionStorage.setItem('selectedBrandId', paramId);
+    } else {
+      const stored = sessionStorage.getItem('selectedBrandId');
+      if (stored) {
+        setBrandId(stored);
+      }
+    }
+  }, [searchParams]);
 
   const t = useCallback((key: string, params?: Record<string, string | number>) => {
     return translateFunction(lang, key, params);
@@ -42,8 +53,7 @@ export default function SelectCarModelPage() {
     router.push('/select-car-brand');
   }, [router]);
 
-  const brandId = searchParams.get('brand');
-  const brand = MOCK_CAR_BRANDS.find(b => b.id === brandId);
+  const brand = brandId ? MOCK_CAR_BRANDS.find(b => b.id === brandId) : undefined;
 
   if (!isClient) {
     return null;

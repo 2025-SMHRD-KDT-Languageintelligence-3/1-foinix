@@ -34,6 +34,9 @@ export default function SelectCarBrandPage() {
   }, [lang]);
 
   const handleBrandSelect = useCallback((brandId: string) => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('selectedBrandId', brandId);
+    }
     router.push(`/select-car-model?brand=${brandId}`, { scroll: false });
   }, [router]);
 
