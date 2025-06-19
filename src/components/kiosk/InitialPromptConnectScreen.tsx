@@ -10,6 +10,7 @@ import type { VehicleInfo } from '@/types/kiosk';
 import type { Language } from '@/lib/translations';
 import { useEffect } from 'react';
 import { useTTS } from '@/hooks/useTTS';
+import { useAutoSTT } from '@/hooks/useAutoSTT';
 
 interface InitialPromptConnectScreenProps {
   vehicleInfo: VehicleInfo;
@@ -24,6 +25,7 @@ export function InitialPromptConnectScreen({ vehicleInfo, slotNumber, onChargerC
   const vehicleModelDisplay = vehicleInfo.model ? t(vehicleInfo.model) : t('selectCarModel.unknownModel');
   const portLocationDisplay = vehicleInfo.portLocationDescription ? t(vehicleInfo.portLocationDescription) : "";
   const { speak } = useTTS();
+  useAutoSTT({ '연결했어': onChargerConnected });
   useEffect(() => {
     speak("테슬라 Y: 좌측 뒤에 라이트쪽에 충전구가 있습니다.");
   }, []);

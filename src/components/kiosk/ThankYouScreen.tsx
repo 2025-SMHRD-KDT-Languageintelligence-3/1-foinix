@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Language } from '@/lib/translations';
 import { useTTS } from '@/hooks/useTTS';
+import { useAutoSTT } from '@/hooks/useAutoSTT';
 
 interface ThankYouScreenProps {
   receiptType?: 'sms' | 'none';
@@ -25,6 +26,10 @@ export function ThankYouScreen({ receiptType, onNewSession, lang, t, onLanguageS
   const router = useRouter();
   const [countdown, setCountdown] = useState(AUTO_RESET_SECONDS);
   const { speak } = useTTS();
+  useAutoSTT({
+    '영수증출력': onNewSession,
+    '필요없어': onNewSession,
+  });
   useEffect(() => {
     speak('이용해 주셔서 감사합니다. 안전 운전하세요.');
   }, []);

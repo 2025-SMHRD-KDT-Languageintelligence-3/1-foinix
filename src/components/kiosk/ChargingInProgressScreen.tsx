@@ -17,6 +17,7 @@ import type { Language } from "@/lib/translations";
 import { t as TFunction } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 import { useTTS } from "@/hooks/useTTS";
+import { useAutoSTT } from "@/hooks/useAutoSTT";
 
 interface ChargingInProgressScreenProps {
   slotNumber: string;
@@ -282,6 +283,11 @@ export function ChargingInProgressScreen({
       setTimeout(() => onStopChargingRef.current(currentBill), 0);
     }
   };
+
+  useAutoSTT({
+    '충전중지': handleManualStop,
+    '문제발생': handleSimulateErrorClick,
+  });
 
   const handleSimulateErrorClick = () => {
     if (chargeIntervalRef.current) {

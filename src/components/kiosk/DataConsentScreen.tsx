@@ -9,6 +9,7 @@ import type { Language } from '@/lib/translations';
 
 import { useEffect } from 'react';
 import { useTTS } from '@/hooks/useTTS';
+import { useAutoSTT } from '@/hooks/useAutoSTT';
 import { Card, CardContent } from '@/components/ui/card'; 
 // Removed CardHeader, CardTitle as they are not used for the inner card.
 
@@ -24,6 +25,10 @@ interface DataConsentScreenProps {
 
 export function DataConsentScreen({ onAgree, onDisagree, disagreeTapCount, lang, t, onLanguageSwitch }: DataConsentScreenProps) {
   const { speak } = useTTS();
+  useAutoSTT({
+    '동의합니다': onAgree,
+    '비동의합니다': onDisagree,
+  });
   useEffect(() => {
     speak("개인정보 수집 및 이용에 동의해 주세요.");
   }, []);

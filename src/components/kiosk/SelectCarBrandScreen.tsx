@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import type { CarBrand } from '@/types/kiosk';
 import { Card } from '@/components/ui/card';
 import type { Language } from '@/lib/translations';
+import { useAutoSTT, STTCommands } from '@/hooks/useAutoSTT';
 
 interface SelectCarBrandScreenProps {
   brands: CarBrand[];
@@ -22,6 +23,16 @@ interface SelectCarBrandScreenProps {
 
 export function SelectCarBrandScreen({ brands, onBrandSelect, onCancel, lang, t, onLanguageSwitch }: SelectCarBrandScreenProps) {
   const router = useRouter();
+  const commandMap: STTCommands = {};
+  brands.forEach((brand) => {
+    const phrase = t(brand.name);
+    commandMap[phrase] = () => {
+      onBrandSelect(brand.id);
+      router.push('/select-car-model');
+    };
+  });
+  commandMap['취소'] = onCancel;
+  useAutoSTT(commandMap);
   const languageButton = (
     <Button
       onClick={onLanguageSwitch}

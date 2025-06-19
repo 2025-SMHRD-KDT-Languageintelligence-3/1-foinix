@@ -11,6 +11,7 @@ import type { CarBrand, VehicleInfo } from '@/types/kiosk';
 import { Card } from '@/components/ui/card';
 import type { Language } from '@/lib/translations';
 import { cn } from '@/lib/utils';
+import { useAutoSTT, STTCommands } from '@/hooks/useAutoSTT';
 
 interface SelectCarModelScreenProps {
   brand: CarBrand | undefined;
@@ -23,6 +24,18 @@ interface SelectCarModelScreenProps {
 
 export function SelectCarModelScreen({ brand, onModelSelect, onCancel, lang, t, onLanguageSwitch }: SelectCarModelScreenProps) {
   const router = useRouter();
+  const commandMap: STTCommands = {};
+  if (brand) {
+    brand.models.forEach((model) => {
+      const phrase = t(model.name);
+      commandMap[phrase] = () => {
+        onModelSelect({ model: model.name, licensePlate: 'selectCarModel.manualEntryLicensePlate' });
+        router.push('/preauth');
+      };
+    });
+  }
+  commandMap['취소'] = onCancel;
+  useAutoSTT(commandMap);
   const languageButton = (
     <Button
       onClick={onLanguageSwitch}

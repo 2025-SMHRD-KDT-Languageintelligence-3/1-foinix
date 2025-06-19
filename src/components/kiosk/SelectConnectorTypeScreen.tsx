@@ -10,6 +10,7 @@ import type { ConnectorTypeInfo, VehicleInfo } from '@/types/kiosk';
 import { Badge } from '@/components/ui/badge';
 import type { Language } from '@/lib/translations';
 import { useTTS } from '@/hooks/useTTS'; // ✅ TTS 훅 import
+import { useAutoSTT, STTCommands } from '@/hooks/useAutoSTT';
 
 interface SelectConnectorTypeScreenProps {
   vehicleInfo: VehicleInfo | null;
@@ -21,9 +22,9 @@ interface SelectConnectorTypeScreenProps {
   onLanguageSwitch: () => void;
 }
 
-export function SelectConnectorTypeScreen({ 
-  vehicleInfo, 
-  availableConnectors, 
+export function SelectConnectorTypeScreen({
+  vehicleInfo,
+  availableConnectors,
   onConnectorSelect,
   onCancel,
   lang,
@@ -31,6 +32,13 @@ export function SelectConnectorTypeScreen({
   onLanguageSwitch
 }: SelectConnectorTypeScreenProps) {
   const { speak } = useTTS();
+  const commandMap: STTCommands = {};
+  availableConnectors.forEach((c) => {
+    const phrase = t(c.name);
+    commandMap[phrase] = () => onConnectorSelect(c.id);
+  });
+  commandMap['취소'] = onCancel;
+  useAutoSTT(commandMap);
 
   useEffect(() => {
     speak("차량에 맞는 충전 커넥터를 선택해 주세요.");

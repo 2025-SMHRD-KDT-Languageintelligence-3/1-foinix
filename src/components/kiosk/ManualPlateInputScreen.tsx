@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Edit3 } from 'lucide-react';
 import type { Language } from '@/lib/translations';
+import { useAutoSTT } from '@/hooks/useAutoSTT';
 
 interface ManualPlateInputScreenProps {
   onSubmit: (plate: string) => void;
@@ -38,6 +39,11 @@ export function ManualPlateInputScreen({ onSubmit, onCancel, lang, t, onLanguage
       router.push('/select-car-brand');
     }
   };
+
+  useAutoSTT({
+    '제출': handleSubmit,
+    '취소': onCancel,
+  });
 
   return (
     <FullScreenCard title={t('manualPlateInput.title')} bottomCenterAccessory={languageButton}>

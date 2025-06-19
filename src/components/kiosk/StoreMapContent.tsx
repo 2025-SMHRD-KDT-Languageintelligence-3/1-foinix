@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
+import { useAutoSTT } from '@/hooks/useAutoSTT';
+
 import { useRouter } from "next/navigation";
 
 declare global {
@@ -34,6 +36,10 @@ export default function StoreMapContent() {
     Record<string, { address: string; tel: string }>
   >({});
   const router = useRouter();
+  useAutoSTT({
+    '뒤로가기': () => router.back(),
+    '닫기': () => router.back(),
+  });
 
   useEffect(() => {
     const script = document.createElement("script");
