@@ -33,7 +33,7 @@ export function SelectCarBrandScreen({ brands, onBrandSelect, onCancel, lang, t,
     const phrase = translate(brand.name);
     commandMap[phrase] = () => {
       onBrandSelect(brand.id);
-      router.push('/select-car-model');
+      router.push('/select-car-model', { scroll: false });
     };
   });
   commandMap['취소'] = onCancel;
@@ -65,13 +65,13 @@ export function SelectCarBrandScreen({ brands, onBrandSelect, onCancel, lang, t,
             className="p-4 flex flex-col items-center justify-center hover:shadow-lg cursor-pointer aspect-square transition-all hover:bg-muted/50"
             onClick={() => {
               onBrandSelect(brand.id);
-              router.push('/select-car-model');
+              router.push('/select-car-model', { scroll: false });
             }}
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 onBrandSelect(brand.id);
-                router.push('/select-car-model');
+                router.push('/select-car-model', { scroll: false });
               }
             }}
             aria-label={translate(brand.name)}

@@ -41,16 +41,16 @@ export default function ManualPlateInputPage() {
       console.log('License plate submitted:', plate);
       const vehicle = findVehicleByPlate(plate);
       if (vehicle) {
-        router.push('/preauth');
+        router.push('/preauth', { scroll: false });
       } else {
-        router.push('/select-car-brand');
+        router.push('/select-car-brand', { scroll: false });
       }
     },
     [router]
   );
 
   const handleCancel = useCallback(() => {
-    router.push('/');
+    router.push('/', { scroll: false });
   }, [router]);
 
   if (!isClient) {

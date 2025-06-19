@@ -34,11 +34,11 @@ export default function SelectCarBrandPage() {
   }, [lang]);
 
   const handleBrandSelect = useCallback((brandId: string) => {
-    router.push(`/select-car-model?brand=${brandId}`);
+    router.push(`/select-car-model?brand=${brandId}`, { scroll: false });
   }, [router]);
 
   const handleCancel = useCallback(() => {
-    router.push('/manual-plate-input');
+    router.push('/manual-plate-input', { scroll: false });
   }, [router]);
 
   if (!isClient) {
