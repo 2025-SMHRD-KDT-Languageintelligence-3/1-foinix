@@ -11,21 +11,25 @@ interface FullScreenCardProps {
 
 export function FullScreenCard({ children, className, title, bottomCenterAccessory }: FullScreenCardProps) {
   return (
-    <div className={cn(
-      'w-full h-full flex flex-col bg-card text-card-foreground animate-fade-in', // Root is flex-col
-      className
-    )}>
+    <div
+      className={cn(
+        "w-full min-h-dvh flex flex-col items-center justify-center relative bg-card text-card-foreground animate-fade-in",
+        className,
+      )}
+    >
       {/* Main scrollable content area */}
-      <div className="flex-grow w-full flex flex-col items-center justify-center p-6 sm:p-10 overflow-y-auto">
-        {title && <h1 className="text-4xl sm:text-5xl font-headline font-bold mb-8 text-center">{title}</h1>}
-        <div className="w-full flex flex-col items-center">
-          {children}
-        </div>
+      <div className="w-full flex flex-col items-center justify-center p-6 sm:p-10 pb-24 overflow-y-auto">
+        {title && (
+          <h1 className="text-4xl sm:text-5xl font-headline font-bold mb-8 text-center">
+            {title}
+          </h1>
+        )}
+        <div className="w-full flex flex-col items-center">{children}</div>
       </div>
 
       {/* Bottom center accessory area */}
       {bottomCenterAccessory && (
-        <div className="w-full py-4 px-6 flex justify-center items-center border-t border-border/30 shrink-0">
+        <div className="absolute bottom-0 left-0 right-0 py-4 px-6 flex justify-center items-center border-t border-border/30">
           {bottomCenterAccessory}
         </div>
       )}
