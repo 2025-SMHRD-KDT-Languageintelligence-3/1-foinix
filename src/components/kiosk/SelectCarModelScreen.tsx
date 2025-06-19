@@ -46,7 +46,7 @@ export function SelectCarModelScreen({ brand, onModelSelect, onCancel, lang, t, 
     </Button>
   );
   
-  if (!brand) {
+  if (!brand || brand.models.length === 0) {
     return (
       <FullScreenCard title={t("selectCarModel.error.noBrand")} bottomCenterAccessory={languageButton}>
         <CarIcon size={80} className="text-primary mb-6" />
