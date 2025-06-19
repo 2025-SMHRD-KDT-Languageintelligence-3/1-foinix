@@ -1,0 +1,117 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light Blue Theme (White background with blue accents) - THIS IS THE DEFAULT LIGHT MODE */
+    --background: 0 0% 98%;               /* Almost white */
+    --foreground: 220 25% 25%;             /* Dark cool gray/blue */
+    
+    --card: 0 0% 100%;                      /* White */
+    --card-foreground: 220 25% 25%;        /* Dark cool gray/blue */
+    
+    --popover: 0 0% 100%;                   /* White */
+    --popover-foreground: 220 25% 25%;     /* Dark cool gray/blue */
+    
+    --primary: 200 70% 55%;                 /* Bright cyan/blue */
+    --primary-foreground: 0 0% 100%;        /* White text on primary */
+    
+    --secondary: 200 70% 90%;               /* Light cyan/blue for secondary buttons/areas */
+    --secondary-foreground: 200 70% 30%;   /* Darker cyan/blue text on secondary */
+    
+    --muted: 220 30% 94%;                   /* Very light cool gray for subtle backgrounds */
+    --muted-foreground: 220 25% 55%;        /* Medium cool gray (Muted text) */
+    
+    --accent: 180 60% 50%;                  /* Teal accent */
+    --accent-foreground: 0 0% 100%;         /* White text on accent */
+    
+    --destructive: 0 70% 50%;               /* Red for destructive actions */
+    --destructive-foreground: 0 0% 98%;     /* Light text on destructive actions */
+    
+    --border: 220 20% 88%;                  /* Light cool gray border */
+    --input: 220 30% 96%;                   /* Very light cool gray for input backgrounds */
+    --ring: 200 70% 55%;                    /* Primary blue for focus rings */
+    
+    --chart-1: 200 70% 70%;
+    --chart-2: 180 70% 60%;
+    --chart-3: 200 60% 50%;
+    --chart-4: 180 70% 50%;
+    --chart-5: 200 70% 75%;
+    --radius: 0.75rem;
+
+    /* Sidebar for light blue theme */
+    --sidebar-background: 220 40% 95%;
+    --sidebar-foreground: 220 25% 25%;
+    --sidebar-primary: 200 70% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 180 60% 50%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 30% 88%;
+    --sidebar-ring: 200 70% 55%;
+  }
+
+  .dark {
+    /* NEW Navy/Deep Blue Dark Theme for eCharge Kiosk */
+    --background: 220 30% 10%;             /* Very dark navy/blue */
+    --foreground: 220 15% 85%;             /* Light gray/off-white */
+    
+    --card: 220 30% 15%;                    /* Slightly lighter dark navy/blue */
+    --card-foreground: 220 15% 85%;        /* Light gray/off-white */
+    
+    --popover: 220 30% 15%;                 /* Similar to card */
+    --popover-foreground: 220 15% 85%;     /* Similar to card foreground */
+    
+    --primary: 200 70% 60%;                 /* Bright cyan/blue for primary actions */
+    --primary-foreground: 0 0% 100%;        /* White text on primary */
+    
+    --secondary: 220 20% 30%;               /* Muted blue or gray */
+    --secondary-foreground: 220 15% 75%;   /* Light text on secondary */
+    
+    --muted: 220 30% 8%;                    /* Darker shade of background */
+    --muted-foreground: 220 15% 65%;        /* Less prominent light gray */
+    
+    --accent: 190 80% 55%;                  /* Brighter blue accent */
+    --accent-foreground: 0 0% 100%;         /* White text on accent */
+    
+    --destructive: 0 60% 50%;               /* Red for destructive actions */
+    --destructive-foreground: 0 0% 98%;     /* Light text on destructive */
+    
+    --border: 220 30% 25%;                  /* Subtle blue/gray border */
+    --input: 220 30% 20%;                   /* Dark input background */
+    --ring: 200 70% 60%;                    /* Primary blue for focus rings */
+    
+    --chart-1: 200 70% 65%;
+    --chart-2: 190 70% 55%;
+    --chart-3: 200 60% 50%;
+    --chart-4: 190 70% 45%;
+    --chart-5: 200 70% 70%;
+
+    /* Sidebar for navy/deep blue dark theme */
+    --sidebar-background: 220 30% 12%;
+    --sidebar-foreground: 220 15% 80%;
+    --sidebar-primary: 200 70% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 190 80% 55%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 30% 22%;
+    --sidebar-ring: 200 70% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply font-body;
+    background-color: hsl(var(--background)); 
+    color: hsl(var(--foreground)); 
+  }
+
+  .dark body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
