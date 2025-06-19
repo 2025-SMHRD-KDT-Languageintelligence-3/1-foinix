@@ -100,9 +100,9 @@ export const translations: Record<string, Record<Language, string>> = {
   "carModel.kia.ev6": { ko: "EV6", en: "EV6" },
   "carModel.kia.niro_ev": { ko: "니로 EV", en: "Niro EV" },
   "carModel.kia.ev9": { ko: "EV9", en: "EV9" },
-  "carModel.kia.soul_ev": { ko: "쏘울 EV", en: "Soul EV" },
+  "carModel.kia.ev5": { ko: "EV5", en: "EV5" },
   "carModel.kia.ray_ev": { ko: "레이 EV", en: "Ray EV" },
-  "carModel.kia.bongo_ev": { ko: "봉고 III EV", en: "Bongo III EV" },
+  "carModel.kia.ev4": { ko: "EV4", en: "EV4" },
   "carModel.kgm.torres_evx": { ko: "토레스 EVX", en: "Torres EVX" },
   "carModel.kgm.korando_emotion": { ko: "코란도 이모션", en: "Korando e-Motion" },
   "carModel.tesla.model_3": { ko: "모델 3", en: "Model 3" },
@@ -128,9 +128,9 @@ export const translations: Record<string, Record<Language, string>> = {
   "vehicleConfirmation.placeholder.plate": { ko: "예: 12가1234", en: "e.g., 12GA1234" },
   "vehicleConfirmation.button.submitPlate": { ko: "번호판 제출", en: "Submit Plate" },
   "vehicleConfirmation.button.backToScan": { ko: "스캔 결과로 돌아가기", en: "Back to Scan Results" },
+  "vehicleConfirmation.button.selectModel": { ko: "차종 선택하기", en: "Select Car Model" },
 
-
-  // === PrePaymentAuthScreen ===
+   // === PrePaymentAuthScreen ===
   "prePaymentAuth.title": { ko: "결제 인증", en: "Payment Authorization" },
   "prePaymentAuth.instruction": { ko: "결제 방법을 선택하고, 해당 방법으로 인증을 진행해주세요.", en: "Select your payment method and proceed with authorization." },
   "prePaymentAuth.processingTitle": { ko: "결제 승인 중...", en: "Authorizing Payment..." },
@@ -143,7 +143,9 @@ export const translations: Record<string, Record<Language, string>> = {
   "prePaymentAuth.button.authWithCard": { ko: "카드로 인증 진행", en: "Authorize with Card" },
   "prePaymentAuth.button.authWithNFC": { ko: "NFC/모바일로 인증 진행", en: "Authorize with NFC/Mobile" },
   "prePaymentAuth.toast.success.title": { ko: "결제 승인 성공", en: "Payment Authorized" },
-  "prePaymentAuth.toast.success.description_select_connector": { ko: "결제 수단이 성공적으로 승인되었습니다. 충전 커넥터 유형을 선택해주세요.", en: "Payment method successfully authorized. Please select a charging connector type." },
+  "prePaymentAuth.toast.success.description_select_connector": {
+  ko: "결제 수단이 성공적으로 승인되었습니다. 충전 커넥터 유형을 선택해주세요.",
+  en: "Payment method successfully authorized. Please select a charging connector type."},
 
   // === InitialPromptConnectScreen ===
   "initialPromptConnect.title": { ko: "{{slotNumber}}번 슬롯에 충전기를 연결하세요", en: "Connect Charger to Slot {{slotNumber}}" },
@@ -311,10 +313,10 @@ export const translations: Record<string, Record<Language, string>> = {
   "payment.processing.message": { ko: "결제가 처리되는 동안 잠시 기다려주십시오.", en: "Please wait while your payment is being processed." },
   "payment.success.title": { ko: "결제 성공!", en: "Payment Successful!" },
   "payment.receipt.question": { ko: "영수증은 어떻게 하시겠습니까?", en: "How would you like your receipt?" },
-  "payment.receipt.sms": { ko: "내 휴대폰으로 전송 (SMS)", en: "Send to my phone (SMS)" },
+  "payment.receipt.print": { ko: "영수증 출력", en: "Print Receipt" },
   "payment.receipt.none": { ko: "영수증 필요 없음", en: "No receipt needed" },
-  "payment.toast.smsDemo.title": { ko: "SMS 영수증", en: "SMS Receipt" },
-  "payment.toast.smsDemo.description": { ko: "SMS 기능은 데모입니다. 실제 메시지는 전송되지 않습니다.", en: "SMS feature is a demo. No actual message will be sent." },
+  //"payment.toast.smsDemo.title": { ko: "SMS 영수증", en: "SMS Receipt" },
+  //"payment.toast.smsDemo.description": { ko: "SMS 기능은 데모입니다. 실제 메시지는 전송되지 않습니다.", en: "SMS feature is a demo. No actual message will be sent." },
 
   // === VacateSlotReminderScreen ===
   "vacateSlot.title": { ko: "조치 필요", en: "Action Required" },

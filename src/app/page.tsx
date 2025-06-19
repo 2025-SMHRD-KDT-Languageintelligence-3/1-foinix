@@ -26,6 +26,8 @@ import { ChargingInProgressScreen } from '@/components/kiosk/ChargingInProgressS
 import { PaymentScreen } from '@/components/kiosk/PaymentScreen';
 import { ThankYouScreen } from '@/components/kiosk/ThankYouScreen';
 import { ChargingErrorScreen } from '@/components/kiosk/ChargingErrorScreen';
+import Image from 'next/image';
+import chargingImage from '/public/assets/images/charging.png';
 
 
 const MOCK_CAR_MODELS_HYUNDAI: CarModel[] = [
@@ -37,15 +39,15 @@ const MOCK_CAR_MODELS_HYUNDAI: CarModel[] = [
   { id: 'porter_ev', name: 'carModel.hyundai.porter_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Hyundai PorterEV' },
 ];
 const MOCK_CAR_MODELS_KIA: CarModel[] = [
-  { id: 'ev6', name: 'carModel.kia.ev6', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia EV6' },
-  { id: 'niro_ev', name: 'carModel.kia.niro_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia NiroEV' },
-  { id: 'ev9', name: 'carModel.kia.ev9', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia EV9' },
-  { id: 'soul_ev', name: 'carModel.kia.soul_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia SoulEV' },
-  { id: 'ray_ev', name: 'carModel.kia.ray_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia RayEV' },
-  { id: 'bongo_ev', name: 'carModel.kia.bongo_ev', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'Kia BongoEV' },
+  { id: 'ev6', name: 'carModel.kia.ev6', imageUrl: '/images/ev6.jpg', dataAiHint: 'Kia EV6' },
+  { id: 'niro_ev', name: 'carModel.kia.niro_ev', imageUrl: '/images/niro ev.png', dataAiHint: 'Kia NiroEV' },
+  { id: 'ev9', name: 'carModel.kia.ev9', imageUrl: "/images/ev9.jpg", dataAiHint: 'Kia EV9' },
+  { id: 'ev4', name: 'carModel.kia.ev4', imageUrl: "/images/ev4.png", dataAiHint: 'Kia SoulEV' },
+  { id: 'ray_ev', name: 'carModel.kia.ray_ev', imageUrl: "/images/Ray ev.jpg", dataAiHint: 'Kia RayEV' },
+  { id: 'ev5', name: 'carModel.kia.ev5', imageUrl: "/images/ev5.jpg", dataAiHint: 'Kia BongoEV' },
 ];
 const MOCK_CAR_MODELS_KG: CarModel[] = [
-  { id: 'torres_evx', name: 'carModel.kgm.torres_evx', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'KG TorresEVX' },
+  { id: 'torres_evx', name: 'carModel.kgm.torres_evx  ', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'KG TorresEVX' },
   { id: 'korando_emotion', name: 'carModel.kgm.korando_emotion', imageUrl: 'https://placehold.co/400x300.png', dataAiHint: 'KG Korando' },
 ];
 const MOCK_CAR_MODELS_TESLA: CarModel[] = [
@@ -58,25 +60,37 @@ const MOCK_CAR_MODELS_TESLA: CarModel[] = [
 ];
 
 const MOCK_CAR_BRANDS: CarBrand[] = [
-  { id: 'hyundai', name: 'carBrand.hyundai', logoUrl: 'https://placehold.co/150x150.png', dataAiHint: 'Hyundai logo', models: MOCK_CAR_MODELS_HYUNDAI },
-  { id: 'kia', name: 'carBrand.kia', logoUrl: 'https://placehold.co/150x150.png', dataAiHint: 'Kia logo', models: MOCK_CAR_MODELS_KIA },
-  { id: 'kgm', name: 'carBrand.kgm', logoUrl: 'https://placehold.co/150x150.png', dataAiHint: 'KGMobility logo', models: MOCK_CAR_MODELS_KG },
-  { id: 'tesla', name: 'carBrand.tesla', logoUrl: 'https://placehold.co/150x150.png', dataAiHint: 'Tesla logo', models: MOCK_CAR_MODELS_TESLA },
+  { id: 'hyundai', name: 'carBrand.hyundai', logoUrl: '/images/logos/hyundai.png', dataAiHint: 'Hyundai logo', models: MOCK_CAR_MODELS_HYUNDAI },//나중에 경로 변경
+  { id: 'kia', name: 'carBrand.kia', logoUrl: '/images/logos/kia.png', dataAiHint: 'Kia logo', models: MOCK_CAR_MODELS_KIA },
+  { id: 'kgm', name: 'carBrand.kgm', logoUrl: '/images/logos/KGM.png', dataAiHint: 'KGMobility logo', models: MOCK_CAR_MODELS_KG },
+  { id: 'tesla', name: 'carBrand.tesla', logoUrl: '/images/logos/TESLR.png', dataAiHint: 'Tesla logo', models: MOCK_CAR_MODELS_TESLA },
 ];
 
 const MOCK_VEHICLE_DATA: VehicleInfo = {
   licensePlate: `데모-${Math.floor(Math.random() * 900) + 100}`,
   model: "carModel.tesla.model_y",
   portLocationDescription: "selectCarModel.portLocationGeneric",
-  connectionImageUrl: 'https://placehold.co/600x400.png',
+  connectionImageUrl: '/images/dldl.png', // 기본값을 CCS2 이미지로 설정
   dataAiHint: "vehicle charging",
   confidence: 0.95,
   recommendedConnectorType: 'ccs_combo_2',
 };
 
 const MOCK_AVAILABLE_CONNECTORS: ConnectorTypeInfo[] = [
-  { id: 'ac_type_1', name: 'connector.ac_type_1.name', imageUrl: 'https://placehold.co/200x150.png', dataAiHint: 'AC connector', description: 'connector.ac_type_1.description' },
-  { id: 'ccs_combo_2', name: 'connector.ccs_combo_2.name', imageUrl: 'https://placehold.co/200x150.png', dataAiHint: 'CCS2 connector', description: 'connector.ccs_combo_2.description' },
+  {
+    id: 'ac_type_1',
+    name: 'connector.ac_type_1.name',
+    imageUrl: '/images/AC.png',
+    dataAiHint: 'AC connector',
+    description: 'connector.ac_type_1.description',
+  },
+  {
+    id: 'ccs_combo_2',
+    name: 'connector.ccs_combo_2.name',
+    imageUrl: '/images/CCS2.png',
+    dataAiHint: 'CCS2 connector',
+    description: 'connector.ccs_combo_2.description',
+  },
 ];
 
 const MOCK_SLOTS_DATA: ChargingSlot[] = [
@@ -525,13 +539,13 @@ export default function KioskPage() {
         if (!appData.vehicleInfo) {
              console.warn("Missing vehicleInfo for VEHICLE_CONFIRMATION. Resetting.");
              resetToInitialWelcome();
-             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} />;
+             return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onSelectCarModelManually={() => setKioskState('SELECT_CAR_BRAND')}/>;
         }
         return <VehicleConfirmationScreen {...screenProps} vehicleInfo={appData.vehicleInfo} onConfirm={handleVehicleConfirmed} />;
       case 'PRE_PAYMENT_AUTH':
         return <PrePaymentAuthScreen {...screenProps} onAuthSuccess={handlePaymentAuthSuccess} onCancel={resetToInitialWelcome} />;
       case 'SELECT_CONNECTOR_TYPE':
-        return <SelectConnectorTypeScreen {...screenProps} vehicleInfo={appData.vehicleInfo} availableConnectors={MOCK_AVAILABLE_CONNECTORS} onConnectorSelect={handleConnectorTypeSelected} onCancel={resetToInitialWelcome} />;
+        return <SelectConnectorTypeScreen {...screenProps} vehicleInfo={appData.vehicleInfo} availableConnectors={MOCK_AVAILABLE_CONNECTORS} onConnectorSelect={handleConnectorTypeSelected} onCancel={resetToInitialWelcome} onSelectCarModelManually={() => setKioskState('SELECT_CAR_BRAND')} />;
       case 'INITIAL_PROMPT_CONNECT':
         if (!appData.vehicleInfo || !appData.assignedSlotId) {
              console.warn("Missing vehicle or slot info for INITIAL_PROMPT_CONNECT. Handling...");
