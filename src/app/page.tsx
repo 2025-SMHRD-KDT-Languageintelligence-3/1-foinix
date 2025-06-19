@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { KioskState, VehicleInfo, ChargingSlot, AppData, ConnectorTypeInfo, CarBrand, CarModel, BillDetails, OperatingMode } from '@/types/kiosk';
 import { useToast } from "@/hooks/use-toast";
 import { Language, t as translateFunction } from '@/lib/translations';
@@ -20,7 +20,6 @@ import { DetectConnectionScreen } from '@/components/kiosk/DetectConnectionScree
 import { ConfirmStartChargingScreen } from '@/components/kiosk/ConfirmStartChargingScreen';
 import { VacateSlotReminderScreen } from '@/components/kiosk/VacateSlotReminderScreen';
 import { VehicleConfirmationScreen } from '@/components/kiosk/VehicleConfirmationScreen';
-import { WelcomeScreen } from '@/components/kiosk/WelcomeScreen';
 import { SlotAssignmentScreen } from '@/components/kiosk/SlotAssignmentScreen';
 import { QueueScreen } from '@/components/kiosk/QueueScreen';
 import { ChargingInProgressScreen } from '@/components/kiosk/ChargingInProgressScreen';
@@ -124,21 +123,12 @@ export default function KioskPage() {
   const [appData, setAppData] = useState<AppData>(MOCK_INITIAL_APP_DATA);
   const [disagreeTapCount, setDisagreeTapCount] = useState(0);
   const { toast } = useToast();
-  const generalTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const t = useCallback((key: string, params?: Record<string, string | number>) => {
     return translateFunction(appData.language, key, params);
   }, [appData.language]);
 
-  const clearGeneralTimer = useCallback(() => {
-    if (generalTimerRef.current) {
-      clearTimeout(generalTimerRef.current);
-      generalTimerRef.current = null;
-    }
-  }, []);
-
   const resetToInitialWelcome = useCallback(() => {
-    clearGeneralTimer();
     if (typeof window !== 'undefined') {
         sessionStorage.removeItem(CHARGING_PROGRESS_STORAGE_KEY);
         localStorage.removeItem('kioskNextState');
@@ -165,7 +155,7 @@ export default function KioskPage() {
     setDisagreeTapCount(0);
     
     setKioskState('INITIAL_WELCOME');
-  }, [clearGeneralTimer, appData.language]); 
+  }, [appData.language]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -203,26 +193,6 @@ export default function KioskPage() {
     }
   }, [resetToInitialWelcome]); 
 
-
-  useEffect(() => {
-    if (kioskState === 'WELCOME' && appData.currentMode === 'standard') {
-      clearGeneralTimer();
-      generalTimerRef.current = setTimeout(async () => {
-        const vehicleWithPortInfo: VehicleInfo = {
-          ...MOCK_VEHICLE_DATA,
-          licensePlate: `${t('selectCarModel.manualEntryLicensePlate')}-${Math.floor(Math.random() * 900) + 100}`,
-          model: MOCK_VEHICLE_DATA.model,
-        };
-        setAppData(prev => ({
-          ...prev,
-          vehicleInfo: vehicleWithPortInfo,
-        }));
-        setKioskState('VEHICLE_CONFIRMATION');
-      }, 1500);
-    }
-    // Removed 'quick' mode logic as the button is removed.
-    return () => clearGeneralTimer();
-  }, [kioskState, appData.currentMode, appData.vehicleInfo, clearGeneralTimer, t]);
 
 
   useEffect(() => {
@@ -299,7 +269,6 @@ export default function KioskPage() {
 
 
   const handleProceedFromInitialWelcome = () => {
-    clearGeneralTimer();
     setAppData(prev => ({ ...prev, currentMode: 'standard' }));
 
     const scannedVehicleInfo: VehicleInfo = {
@@ -322,7 +291,7 @@ export default function KioskPage() {
     setDisagreeTapCount(0);
     setAppData(prev => ({ ...prev, consentSkipped: false }));
     console.log('Firebase Log (simulated): consent_agreed, mode:', appData.currentMode, 'timestamp:', new Date().toISOString(), 'language:', appData.language);
-    setKioskState('WELCOME'); 
+    setKioskState('VEHICLE_CONFIRMATION');
   };
 
 const handleConsentDisagree = () => {
@@ -549,8 +518,6 @@ const handleConsentDisagree = () => {
       case 'SELECT_CAR_MODEL':
         const selectedBrand = MOCK_CAR_BRANDS.find(b => b.id === appData.selectedBrandId);
         return <SelectCarModelScreen {...screenProps} brand={selectedBrand} onModelSelect={handleModelSelected} onCancel={() => setKioskState('SELECT_CAR_BRAND')} />;
-      case 'WELCOME':
-        return <WelcomeScreen {...screenProps} quickMode={false} />; // quickMode is now always false
       case 'VEHICLE_CONFIRMATION':
         if (!appData.vehicleInfo) {
              console.warn("Missing vehicleInfo for VEHICLE_CONFIRMATION. Resetting.");

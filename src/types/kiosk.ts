@@ -80,7 +80,6 @@ export type KioskState =
   | 'INITIAL_WELCOME'
   | 'LIVE_CAMERA_FEED'
   | 'DATA_CONSENT'
-  | 'WELCOME'
   | 'VEHICLE_CONFIRMATION'
   | 'QUEUE'
   | 'PRE_PAYMENT_AUTH'

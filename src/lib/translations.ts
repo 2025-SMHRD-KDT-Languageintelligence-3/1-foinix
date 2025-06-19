@@ -112,10 +112,6 @@ export const translations: Record<string, Record<Language, string>> = {
   "carModel.tesla.cybertruck": { ko: "사이버트럭", en: "Cybertruck" },
   "carModel.tesla.roadster": { ko: "로드스터", en: "Roadster" },
 
-  // === WelcomeScreen (Auto-scan path or post-consent processing) ===
-  "welcome.title": { ko: "EV이스 키오스크에 오신 것을 환영합니다", en: "Welcome to EV이스 Kiosk" },
-  "welcome.message": { ko: "차량 정보를 확인하고 사용 가능한 충전 슬롯을 찾는 중입니다...", en: "Identifying your vehicle and finding an available charging slot..." },
-  "welcome.quickModeMessage": { ko: "빠른 시작 모드: 차량 정보를 처리 중입니다...", en: "Quick Start Mode: Processing vehicle information..." },
 
   // === VehicleConfirmationScreen ===
   "vehicleConfirmation.title": { ko: "차량 확인", en: "Vehicle Confirmation" },
