@@ -333,6 +333,7 @@ export const translations: Record<string, Record<Language, string>> = {
   "thankYou.message.enjoyCharge": { ko: "충전을 즐기십시오! 이 화면은 곧 초기화됩니다.", en: "Enjoy your charge! This screen will reset shortly." },
   "thankYou.message.smsSent": { ko: "영수증이 SMS로 전송되었습니다. 이 화면은 곧 초기화됩니다.", en: "Your receipt has been sent via SMS. This screen will reset shortly." },
   "thankYou.button.newSession": { ko: "새 충전 세션 시작", en: "Start New Charging Session" },
+  "thankYou.button.more": { ko: "더보기", en: "More" },
   "thankYou.autoResetMessage": { ko: "{{seconds}}초 후 자동 초기화...", en: "Auto-reset in {{seconds}} seconds..." },
 
   // === QueueScreen ===

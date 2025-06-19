@@ -2,11 +2,12 @@
 "use client";
 
 import Image from 'next/image';
-import { ReceiptText, Smile, Clock } from 'lucide-react';
+import { ReceiptText, Smile, Clock, Map } from 'lucide-react';
 import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Language, t as TFunction } from '@/lib/translations';
 
 interface ThankYouScreenProps {
@@ -20,6 +21,7 @@ interface ThankYouScreenProps {
 const AUTO_RESET_SECONDS = 60;
 
 export function ThankYouScreen({ receiptType, onNewSession, lang, t, onLanguageSwitch }: ThankYouScreenProps) {
+  const router = useRouter();
   const [countdown, setCountdown] = useState(AUTO_RESET_SECONDS);
 
   useEffect(() => {
@@ -45,6 +47,10 @@ export function ThankYouScreen({ receiptType, onNewSession, lang, t, onLanguageS
     </Button>
   );
 
+  const handleMore = () => {
+    router.push('/store-map');
+  };
+
   return (
     <FullScreenCard 
       title={t("thankYou.title")} 
@@ -60,6 +66,14 @@ export function ThankYouScreen({ receiptType, onNewSession, lang, t, onLanguageS
       <ReceiptText size={100} className="text-secondary mb-10 opacity-50" />
 
       <KioskButton onClick={onNewSession} label={t("thankYou.button.newSession")} />
+      <Button
+        variant="outline"
+        onClick={handleMore}
+        className="bg-card text-primary border-primary hover:bg-primary/10 text-lg py-3 px-6 mt-4 flex items-center gap-2"
+      >
+        {t("thankYou.button.more")}
+        <Map className="ml-2 h-5 w-5" />
+      </Button>
       
       <div className="flex items-center text-sm text-muted-foreground mt-6">
         <Clock size={16} className="mr-2"/>
