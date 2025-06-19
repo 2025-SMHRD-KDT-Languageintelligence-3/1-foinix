@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Handshake, PlayCircle } from 'lucide-react';
+import { Handshake, PlayCircle, Zap } from 'lucide-react';
 import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
@@ -49,12 +49,12 @@ export function InitialWelcomeScreen({ onProceedStandard, lang, t, onLanguageSwi
           label={t("initialWelcome.proceedButtonStandard")}
           icon={<PlayCircle />}
         />
-        <Button
+        <KioskButton
           onClick={() => router.push('/manual-plate-input')}
-          className="w-full text-white bg-blue-800 hover:bg-blue-700"
-        >
-          ⚡ 빠른 시작
-        </Button>
+          label={t('initialWelcome.proceedButtonQuick')}
+          icon={<Zap />}
+          variant="secondary"
+        />
       </div>
       {/* Removed the auto-switch message paragraph */}
     </FullScreenCard>
