@@ -117,6 +117,9 @@ const MOCK_INITIAL_APP_DATA: AppData = {
 };
 
 const CHARGING_PROGRESS_STORAGE_KEY = 'kioskChargingProgressState';
+const RETURN_STATE_KEY = 'kioskReturnState';
+const CURRENT_STATE_KEY = 'kioskCurrentState';
+const CURRENT_APPDATA_KEY = 'kioskCurrentAppData';
 
 export default function KioskPage() {
   const [kioskState, setKioskState] = useState<KioskState>('PRE_PROCESSING_CAMERA_FEED');
@@ -131,9 +134,12 @@ export default function KioskPage() {
   const resetToInitialWelcome = useCallback(() => {
     if (typeof window !== 'undefined') {
         sessionStorage.removeItem(CHARGING_PROGRESS_STORAGE_KEY);
+        sessionStorage.removeItem(CURRENT_STATE_KEY);
+        sessionStorage.removeItem(CURRENT_APPDATA_KEY);
         localStorage.removeItem('kioskNextState');
         localStorage.removeItem('kioskFinalBill');
         localStorage.removeItem('kioskChargingErrorMessage');
+        localStorage.removeItem(RETURN_STATE_KEY);
     }
     const freshSlots = MOCK_SLOTS_DATA.map(s => {
         if (s.id === 'A2' && s.status === 'occupied') {
@@ -166,6 +172,13 @@ export default function KioskPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      sessionStorage.setItem(CURRENT_STATE_KEY, kioskState);
+      sessionStorage.setItem(CURRENT_APPDATA_KEY, JSON.stringify(appData));
+    }
+  }, [kioskState, appData]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
       const nextState = localStorage.getItem('kioskNextState');
       const finalBillString = localStorage.getItem('kioskFinalBill');
       const chargingErrorMsg = localStorage.getItem('kioskChargingErrorMessage');
@@ -191,7 +204,29 @@ export default function KioskPage() {
         localStorage.removeItem('kioskChargingErrorMessage');
       }
     }
-  }, [resetToInitialWelcome]); 
+  }, [resetToInitialWelcome]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const returnState = localStorage.getItem(RETURN_STATE_KEY);
+      if (returnState) {
+        localStorage.removeItem(RETURN_STATE_KEY);
+        const savedState = sessionStorage.getItem(CURRENT_STATE_KEY);
+        const savedApp = sessionStorage.getItem(CURRENT_APPDATA_KEY);
+        if (savedState && savedApp) {
+          try {
+            const parsedApp = JSON.parse(savedApp) as AppData;
+            setAppData(parsedApp);
+            setKioskState(savedState as KioskState);
+            return;
+          } catch (e) {
+            console.error('Failed to restore kiosk state from sessionStorage', e);
+          }
+        }
+        setKioskState(returnState as KioskState);
+      }
+    }
+  }, []);
 
 
 

@@ -16,6 +16,9 @@ export function LocalBusinessDisplay({ lang, t, from }: LocalBusinessDisplayProp
   const router = useRouter();
 
   const handleShowAllOnMap = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('kioskReturnState', 'CHARGING_IN_PROGRESS');
+    }
     router.push('/map');
   };
 
