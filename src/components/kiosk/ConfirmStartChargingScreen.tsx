@@ -8,6 +8,7 @@ import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
 import type { Language } from '@/lib/translations';
 import { useTTS } from '@/hooks/useTTS';
+import { useAutoSTT } from '@/hooks/useAutoSTT';
 
 interface ConfirmStartChargingScreenProps {
   onStart: () => void;
@@ -54,6 +55,8 @@ export function ConfirmStartChargingScreen({ onStart, onCancel, lang, t, onLangu
     if (timerRef.current) clearInterval(timerRef.current);
     onCancel();
   }
+
+  useAutoSTT({ '충전시작': handleManualStart });
 
   const languageButton = (
     <Button

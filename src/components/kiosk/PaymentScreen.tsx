@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState, useEffect } from 'react';
 import type { Language } from '@/lib/translations'; // translations.ts 파일도 수정했음을 가정
 import { useTTS } from '@/hooks/useTTS';
+import { useAutoSTT } from '@/hooks/useAutoSTT';
 
 interface PaymentScreenProps {
   bill: BillDetails;
@@ -44,6 +45,11 @@ export function PaymentScreen({ bill, onPaymentProcessed, lang, t, onLanguageSwi
       setPaymentStatus('success');
     }, 2000);
   };
+
+  useAutoSTT({
+    '결제해줘': () => handlePaymentMethodSelect('card'),
+    '카드로결제': () => handlePaymentMethodSelect('card'),
+  });
   
   const languageButton = (
     <Button

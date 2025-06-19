@@ -5,6 +5,7 @@ import { Map } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import CarbonComparison from './CarbonComparison'; // 새로 만든 컴포넌트 import
 import type { Language } from '@/lib/translations';
+import { useAutoSTT } from '@/hooks/useAutoSTT';
 
 interface LocalBusinessDisplayProps {
   lang: Language;
@@ -14,6 +15,10 @@ interface LocalBusinessDisplayProps {
 
 export function LocalBusinessDisplay({ lang, t, from }: LocalBusinessDisplayProps) {
   const router = useRouter();
+  useAutoSTT({
+    '뒤로가기': () => router.back(),
+    '닫기': () => router.back(),
+  });
 
   const handleShowAllOnMap = () => {
     if (typeof window !== 'undefined') {

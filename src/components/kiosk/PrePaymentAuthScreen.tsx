@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import type { Language } from '@/lib/translations';
 import { useTTS } from '@/hooks/useTTS';
+import { useAutoSTT } from '@/hooks/useAutoSTT';
 
 interface PrePaymentAuthScreenProps {
   onAuthSuccess: () => void;
@@ -30,10 +31,15 @@ export function PrePaymentAuthScreen({ onAuthSuccess, onCancel, lang, t, onLangu
     setIsProcessing(true);
     setTimeout(() => {
       onAuthSuccess();
-      setIsProcessing(false); 
+      setIsProcessing(false);
       setProcessingMethod(null);
     }, 2000);
   };
+
+  useAutoSTT({
+    '카드결제': () => handleSimulatePayment('card'),
+    '모바일결제': () => handleSimulatePayment('nfc'),
+  });
   
   const languageButton = (
     <Button

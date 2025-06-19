@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import type { Language } from '@/lib/translations';
 import { useTTS } from '@/hooks/useTTS';
+import { useAutoSTT } from '@/hooks/useAutoSTT';
 
 interface VehicleConfirmationScreenProps {
   vehicleInfo: VehicleInfo;
@@ -33,6 +34,10 @@ export function VehicleConfirmationScreen({
   const [isManualEntryMode, setIsManualEntryMode] = useState(false);
   const [manualPlateInput, setManualPlateInput] = useState("");
   const { speak } = useTTS();
+  useAutoSTT({
+    '맞아': () => onConfirm(vehicleInfo),
+    '아니야': () => router.push('/manual-plate-input'),
+  });
   useEffect(() => {
     speak("차량 번호가 맞으신가요? 예 또는 아니요를 눌러주세요.");
   }, []);
