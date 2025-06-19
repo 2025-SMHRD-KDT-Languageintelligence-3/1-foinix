@@ -117,6 +117,14 @@ export function ChargingInProgressScreen({
   
   const [isStateLoaded, setIsStateLoaded] = useState(false);
 
+  const [showConnectorWarning, setShowConnectorWarning] = useState(false);
+
+  useEffect(() => {
+    setShowConnectorWarning(true);
+    const timer = setTimeout(() => setShowConnectorWarning(false), 20000);
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = sessionStorage.getItem(SESSION_STORAGE_KEY);
@@ -300,6 +308,13 @@ export function ChargingInProgressScreen({
     <FullScreenCard
       bottomCenterAccessory={languageButton}
     >
+      {showConnectorWarning && (
+        <div className="absolute top-4 right-4 bg-red-100 text-red-800 px-4 py-2 rounded shadow-md z-50">
+          <strong>⚠️ 경고:</strong><br />
+          커넥터를 강제로 분리하지 마세요.<br />
+          충전 완료 후 분리해 주세요.
+        </div>
+      )}
       <div className="absolute top-6 right-6 sm:top-10 sm:right-10 z-10 flex items-center space-x-3">
         <NoticesDisplay lang={lang} t={t} />
         <TroubleshootingGuide lang={lang} t={t} />
