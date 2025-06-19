@@ -548,7 +548,6 @@ const handleConsentDisagree = () => {
         return (
           <ManualPlateInputScreen
             lang={appData.language}
-            t={t}
             onLanguageSwitch={handleLanguageSwitch}
             onSubmit={handleManualPlateSubmitted}
             onCancel={resetToInitialWelcome}

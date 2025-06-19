@@ -8,16 +8,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Edit3 } from 'lucide-react';
 import type { Language } from '@/lib/translations';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface ManualPlateInputScreenProps {
   onSubmit: (plate: string) => void;
   onCancel: () => void;
   lang: Language;
-  t: (key: string, params?: Record<string, string | number>) => string;
   onLanguageSwitch: () => void;
 }
 
-export function ManualPlateInputScreen({ onSubmit, onCancel, lang, t, onLanguageSwitch }: ManualPlateInputScreenProps) {
+export function ManualPlateInputScreen({ onSubmit, onCancel, lang, onLanguageSwitch }: ManualPlateInputScreenProps) {
+  const { t } = useTranslations();
   const [plate, setPlate] = useState('');
   const router = useRouter();
 
