@@ -23,6 +23,7 @@ export function InitialWelcomeScreen({ onProceedStandard, lang, t, onLanguageSwi
   const { speak } = useTTS();
   useAutoSTT({
     '서비스시작': onProceedStandard,
+    '시작': onProceedStandard,
     '빠른시작': () => router.push('/manual-plate-input'),
   });
   useEffect(() => {

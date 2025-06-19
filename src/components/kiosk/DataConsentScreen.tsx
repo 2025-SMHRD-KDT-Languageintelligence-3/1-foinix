@@ -27,7 +27,9 @@ export function DataConsentScreen({ onAgree, onDisagree, disagreeTapCount, lang,
   const { speak } = useTTS();
   useAutoSTT({
     '동의합니다': onAgree,
+    '동의': onAgree,
     '비동의합니다': onDisagree,
+    '비동의': onDisagree,
   });
   useEffect(() => {
     speak("개인정보 수집 및 이용에 동의해 주세요.");
