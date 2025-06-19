@@ -33,7 +33,7 @@ export function SelectConnectorTypeScreen({
   const { speak } = useTTS();
 
   useEffect(() => {
-    speak("차량에 맞는 충전 커넥터 유형을 선택해주세요.");
+    speak("차량에 맞는 충전 커넥터를 선택해 주세요.");
   }, []);
 
   const recommendedTypeId = vehicleInfo?.recommendedConnectorType;

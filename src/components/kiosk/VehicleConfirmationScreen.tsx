@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CheckCircle2, Edit3 } from 'lucide-react';
 import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
@@ -9,6 +9,7 @@ import type { VehicleInfo } from '@/types/kiosk';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import type { Language, t as TFunction } from '@/lib/translations';
+import { useTTS } from '@/hooks/useTTS';
 
 interface VehicleConfirmationScreenProps {
   vehicleInfo: VehicleInfo;
@@ -29,6 +30,10 @@ export function VehicleConfirmationScreen({
 }: VehicleConfirmationScreenProps) {
   const [isManualEntryMode, setIsManualEntryMode] = useState(false);
   const [manualPlateInput, setManualPlateInput] = useState("");
+  const { speak } = useTTS();
+  useEffect(() => {
+    speak("차량 번호가 맞으신가요? 예 또는 아니요를 눌러주세요.");
+  }, []);
 
   const handleManualSubmit = () => {
   if (manualPlateInput.trim() === "") return;

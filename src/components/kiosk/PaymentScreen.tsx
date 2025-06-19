@@ -6,8 +6,9 @@ import { KioskButton } from './KioskButton';
 import { Button } from '@/components/ui/button';
 import type { BillDetails } from '@/types/kiosk'; // types/kiosk.ts 파일도 수정했음을 가정
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Language, t as TFunction } from '@/lib/translations'; // translations.ts 파일도 수정했음을 가정
+import { useTTS } from '@/hooks/useTTS';
 
 interface PaymentScreenProps {
   bill: BillDetails;
@@ -23,6 +24,19 @@ type PaymentMethod = 'card' | 'nfc' | null;
 export function PaymentScreen({ bill, onPaymentProcessed, lang, t, onLanguageSwitch }: PaymentScreenProps) {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>(null);
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'processing' | 'success'>('pending');
+  const { speak } = useTTS();
+
+  useEffect(() => {
+    if (paymentStatus === 'pending') {
+      speak('충전이 완료되었습니다. 결제를 진행합니다. 결제가 완료되면 충전 커넥터를 분리해 주세요.');
+    }
+  }, [paymentStatus]);
+
+  useEffect(() => {
+    if (paymentStatus === 'success') {
+      speak('결제가 완료되었습니다. 영수증을 인쇄하거나 화면에서 확인할 수 있습니다.');
+    }
+  }, [paymentStatus]);
 
   const handlePaymentMethodSelect = (method: PaymentMethod) => {
     setSelectedPaymentMethod(method);
