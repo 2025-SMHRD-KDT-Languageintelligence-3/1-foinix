@@ -557,7 +557,14 @@ const handleConsentDisagree = () => {
              resetToInitialWelcome();
              return <InitialWelcomeScreen {...screenProps} onProceedStandard={handleProceedFromInitialWelcome} onSelectCarModelManually={() => setKioskState('SELECT_CAR_BRAND')}/>;
         }
-        return <VehicleConfirmationScreen {...screenProps} vehicleInfo={appData.vehicleInfo} onConfirm={handleVehicleConfirmed} />;
+        return (
+          <VehicleConfirmationScreen
+            {...screenProps}
+            vehicleInfo={appData.vehicleInfo}
+            onConfirm={handleVehicleConfirmed}
+            onSelectCarModelManually={() => setKioskState('SELECT_CAR_BRAND')}
+          />
+        );
       case 'PRE_PAYMENT_AUTH':
         return <PrePaymentAuthScreen {...screenProps} onAuthSuccess={handlePaymentAuthSuccess} onCancel={resetToInitialWelcome} />;
       case 'SELECT_CONNECTOR_TYPE':
