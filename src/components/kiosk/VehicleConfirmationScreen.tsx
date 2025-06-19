@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { CheckCircle2, Edit3 } from 'lucide-react';
 import { FullScreenCard } from './FullScreenCard';
 import { KioskButton } from './KioskButton';
@@ -28,6 +29,7 @@ export function VehicleConfirmationScreen({
   t,
   onLanguageSwitch,
 }: VehicleConfirmationScreenProps) {
+  const router = useRouter();
   const [isManualEntryMode, setIsManualEntryMode] = useState(false);
   const [manualPlateInput, setManualPlateInput] = useState("");
   const { speak } = useTTS();
@@ -127,7 +129,12 @@ export function VehicleConfirmationScreen({
 
       <div className="w-full max-w-md space-y-4">
         <KioskButton onClick={() => onConfirm(vehicleInfo)} label={t("vehicleConfirmation.button.confirm")} icon={<CheckCircle2 />} />
-        <KioskButton onClick={() => setIsManualEntryMode(true)} label={t("vehicleConfirmation.button.manualEntry")} variant="outline" icon={<Edit3 />} />
+        <KioskButton
+          onClick={() => router.push('/manual-plate-input')}
+          label={t("vehicleConfirmation.button.manualEntry")}
+          variant="outline"
+          icon={<Edit3 />}
+        />
       </div>
     </FullScreenCard>
   );
