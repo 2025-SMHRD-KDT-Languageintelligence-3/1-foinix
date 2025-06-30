@@ -62,11 +62,7 @@ export function ChargingInProgressScreen({
   selectedConnectorType,
 }: ChargingInProgressScreenProps) {
   const { speak } = useTTS();
-  useEffect(() => {
-    speak(
-      "충전이 진행 중입니다. 필요 시 중지하거나 문제 해결 버튼을 눌러주세요. 시스템 보호를 위해 강제로 커넥터를 제거하지 마세요. 충전이 완료될 때까지 기다려 주세요."
-    );
-  }, []);
+  // Removed custom TTS message to ensure spoken text matches on-screen content
   const loadStateFromSessionStorage = (): StoredChargingState | null => {
     if (typeof window !== "undefined") {
       const saved = sessionStorage.getItem(SESSION_STORAGE_KEY);

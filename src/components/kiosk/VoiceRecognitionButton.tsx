@@ -62,19 +62,19 @@ export function VoiceRecognitionButton() {
   };
 
   if (normalized.includes("충전시작") || normalized.includes("충전")) {
-    speak("충전을 시작합니다.");
+    // speak("충전을 시작합니다.");
     router.push("/charging");
   } else if (normalized.includes("결제")) {
-    speak("결제 화면으로 이동합니다.");
+    // speak("결제 화면으로 이동합니다.");
     router.push("/payment");
   } else if (normalized.includes("처음") || normalized.includes("홈")) {
-    speak("처음 화면으로 이동합니다.");
+    // speak("처음 화면으로 이동합니다.");
     router.push("/");
   } else if (normalized.includes("도움말")) {
-    speak("도움말 화면으로 이동합니다.");
+    // speak("도움말 화면으로 이동합니다.");
     router.push("/help");
   } else if (normalized.includes("설정")) {
-    speak("설정 화면으로 이동합니다.");
+    // speak("설정 화면으로 이동합니다.");
     router.push("/settings");
   } else if (
     normalized.includes("다음") ||
@@ -85,10 +85,10 @@ export function VoiceRecognitionButton() {
       'button[data-variant="default"]:not([aria-label="Start voice recognition"])'
     ) as HTMLButtonElement | null;
     if (nextButton) {
-      speak("다음 단계로 이동합니다.");
+      // speak("다음 단계로 이동합니다.");
       nextButton.click();
     } else {
-      speak("다음 단계로 이동할 수 없습니다.");
+      // speak("다음 단계로 이동할 수 없습니다.");
       toast({
         title: "다음 단계 없음",
         description: "이 화면에서는 다음 단계 버튼을 찾을 수 없습니다.",
@@ -101,7 +101,7 @@ export function VoiceRecognitionButton() {
       description: `"${text}" 명령을 처리할 수 없습니다.`,
       variant: "destructive",
     });
-    speak("죄송합니다. 명령을 이해하지 못했습니다.");
+    // speak("죄송합니다. 명령을 이해하지 못했습니다.");
   }
 
   // ✅ 로그 저장

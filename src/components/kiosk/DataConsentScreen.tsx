@@ -32,8 +32,8 @@ export function DataConsentScreen({ onAgree, onDisagree, disagreeTapCount, lang,
     '비동의': onDisagree,
   });
   useEffect(() => {
-    speak("개인정보 수집 및 이용에 동의해 주세요.");
-  }, []);
+    speak(t("dataConsent.p4_agree"));
+  }, [t]);
   const languageButton = (
     <Button
       onClick={onLanguageSwitch}

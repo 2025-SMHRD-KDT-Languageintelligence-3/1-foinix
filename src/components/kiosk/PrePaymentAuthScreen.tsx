@@ -23,8 +23,8 @@ export function PrePaymentAuthScreen({ onAuthSuccess, onCancel, lang, t, onLangu
   const [processingMethod, setProcessingMethod] = useState<'card' | 'nfc' | null>(null);
   const { speak } = useTTS();
   useEffect(() => {
-    speak("결제를 진행하기 전에 인증을 완료해 주세요.");
-  }, []);
+    speak(t("prePaymentAuth.instruction"));
+  }, [t]);
 
   const handleSimulatePayment = (method: 'card' | 'nfc') => {
     setProcessingMethod(method);

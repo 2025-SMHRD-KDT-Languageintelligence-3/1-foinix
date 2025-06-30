@@ -41,8 +41,8 @@ export function SelectConnectorTypeScreen({
   useAutoSTT(commandMap);
 
   useEffect(() => {
-    speak("차량에 맞는 충전 커넥터를 선택해 주세요.");
-  }, []);
+    speak(t("selectConnectorType.instruction"));
+  }, [t]);
 
   const recommendedTypeId = vehicleInfo?.recommendedConnectorType;
   const vehicleModelDisplayRaw = vehicleInfo?.model ? t(vehicleInfo.model) : "";

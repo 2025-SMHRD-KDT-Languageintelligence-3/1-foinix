@@ -29,8 +29,12 @@ export function InitialPromptConnectScreen({ vehicleInfo, slotNumber, onChargerC
   const { speak } = useTTS();
   useAutoSTT({ '연결했어': onChargerConnected });
   useEffect(() => {
-    speak("테슬라 Y: 좌측 뒤에 라이트쪽에 충전구가 있습니다.");
-  }, []);
+    let message = t("initialPromptConnect.instruction", { vehicleModel: vehicleModelDisplay });
+    if (portLocationDisplay) {
+      message += " " + t("initialPromptConnect.portLocation", { portLocationDescription: portLocationDisplay });
+    }
+    speak(message);
+  }, [t, vehicleModelDisplay, portLocationDisplay]);
 
    let connectionImagePath = vehicleInfo.connectionImageUrl;
 

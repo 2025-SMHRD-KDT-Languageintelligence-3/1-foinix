@@ -30,9 +30,6 @@ export function ThankYouScreen({ receiptType, onNewSession, lang, t, onLanguageS
     '영수증출력': onNewSession,
     '필요없어': onNewSession,
   });
-  useEffect(() => {
-    speak('이용해 주셔서 감사합니다. 안전 운전하세요.');
-  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -46,6 +43,10 @@ export function ThankYouScreen({ receiptType, onNewSession, lang, t, onLanguageS
   if (receiptType === 'sms') {
     receiptMessageKey = "thankYou.message.smsSent";
   }
+
+  useEffect(() => {
+    speak(t(receiptMessageKey));
+  }, [t, receiptMessageKey]);
 
   const languageButton = (
     <Button

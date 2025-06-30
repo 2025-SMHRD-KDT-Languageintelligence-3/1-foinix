@@ -26,8 +26,8 @@ export function InitialWelcomeScreen({ onProceedStandard, onProceedQuickStart, l
     '빠른시작': onProceedQuickStart,
   });
   useEffect(() => {
-    speak("EV 충전 서비스를 시작합니다. 화면을 터치하거나 ‘시작’이라고 말씀해주세요.");
-  }, []);
+    speak(t("initialWelcome.greeting"));
+  }, [t]);
   const languageButton = (
     <Button
       onClick={onLanguageSwitch}

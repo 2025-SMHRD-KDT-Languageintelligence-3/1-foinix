@@ -37,8 +37,8 @@ export function VehicleConfirmationScreen({
     '아니야': () => setIsManualEntryMode(true),
   });
   useEffect(() => {
-    speak("차량 번호가 맞으신가요? 예 또는 아니요를 눌러주세요.");
-  }, []);
+    speak(t("vehicleConfirmation.question"));
+  }, [t]);
 
   const handleManualSubmit = () => {
   if (manualPlateInput.trim() === "") return;
