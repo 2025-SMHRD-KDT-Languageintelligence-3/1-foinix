@@ -22,7 +22,9 @@ interface InitialPromptConnectScreenProps {
 }
 
 export function InitialPromptConnectScreen({ vehicleInfo, slotNumber, onChargerConnected, lang, t, onLanguageSwitch }: InitialPromptConnectScreenProps) {
-  const vehicleModelDisplay = vehicleInfo.model ? t(vehicleInfo.model) : t('selectCarModel.unknownModel');
+  const vehicleModelDisplayRaw = vehicleInfo.model ? t(vehicleInfo.model) : t('selectCarModel.unknownModel');
+  const vehicleModelDisplay =
+    vehicleModelDisplayRaw === '모델 Y' ? '니로' : vehicleModelDisplayRaw;
   const portLocationDisplay = vehicleInfo.portLocationDescription ? t(vehicleInfo.portLocationDescription) : "";
   const { speak } = useTTS();
   useAutoSTT({ '연결했어': onChargerConnected });

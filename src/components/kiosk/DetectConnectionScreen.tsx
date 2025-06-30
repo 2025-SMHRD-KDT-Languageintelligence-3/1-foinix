@@ -19,7 +19,9 @@ export function DetectConnectionScreen({ vehicleModelKey, onDetectionComplete, l
   const [status, setStatus] = useState<'detecting' | 'success'>('detecting');
   const [progressValue, setProgressValue] = useState(10); 
 
-  const vehicleModelDisplay = t(vehicleModelKey);
+  const vehicleModelDisplayRaw = t(vehicleModelKey);
+  const vehicleModelDisplay =
+    vehicleModelDisplayRaw === '모델 Y' ? '니로' : vehicleModelDisplayRaw;
 
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined = undefined;
