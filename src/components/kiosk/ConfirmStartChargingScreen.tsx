@@ -25,8 +25,8 @@ export function ConfirmStartChargingScreen({ onStart, onCancel, lang, t, onLangu
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const { speak } = useTTS();
   useEffect(() => {
-    speak("충전 준비가 완료되었습니다. 곧 충전이 시작됩니다.");
-  }, []);
+    speak(t("confirmStartCharging.instruction"));
+  }, [t]);
 
   useEffect(() => {
     timerRef.current = setInterval(() => {

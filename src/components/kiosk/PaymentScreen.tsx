@@ -28,15 +28,15 @@ export function PaymentScreen({ bill, onPaymentProcessed, lang, t, onLanguageSwi
 
   useEffect(() => {
     if (paymentStatus === 'pending') {
-      speak('충전이 완료되었습니다. 결제를 진행합니다. 결제가 완료되면 충전 커넥터를 분리해 주세요.');
+      speak(`${t('payment.title.complete')} ${t('payment.instruction.disconnect')}`);
     }
-  }, [paymentStatus]);
+  }, [paymentStatus, t]);
 
   useEffect(() => {
     if (paymentStatus === 'success') {
-      speak('결제가 완료되었습니다. 영수증을 인쇄하거나 화면에서 확인할 수 있습니다.');
+      speak(t('payment.success.title'));
     }
-  }, [paymentStatus]);
+  }, [paymentStatus, t]);
 
   const handlePaymentMethodSelect = (method: PaymentMethod) => {
     setSelectedPaymentMethod(method);
