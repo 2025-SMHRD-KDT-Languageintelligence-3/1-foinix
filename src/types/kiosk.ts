@@ -76,7 +76,7 @@ export interface NoticeItem {
 
 
 export type KioskState =
-  | 'PRE_PROCESSING_CAMERA_FEED' // New initial state
+  | 'PRE_PROCESSING_CAMERA_FEED'
   | 'INITIAL_WELCOME'
   | 'LIVE_CAMERA_FEED'
   | 'DATA_CONSENT'

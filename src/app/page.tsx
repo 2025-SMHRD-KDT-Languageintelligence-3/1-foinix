@@ -94,7 +94,7 @@ const CURRENT_STATE_KEY = 'kioskCurrentState';
 const CURRENT_APPDATA_KEY = 'kioskCurrentAppData';
 
 export default function KioskPage() {
-  const [kioskState, setKioskState] = useState<KioskState>('PRE_PROCESSING_CAMERA_FEED');
+  const [kioskState, setKioskState] = useState<KioskState>('INITIAL_WELCOME');
   const [appData, setAppData] = useState<AppData>(MOCK_INITIAL_APP_DATA);
   const [disagreeTapCount, setDisagreeTapCount] = useState(0);
   const { toast } = useToast();
