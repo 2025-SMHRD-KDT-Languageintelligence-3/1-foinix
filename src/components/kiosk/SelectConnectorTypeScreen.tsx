@@ -45,7 +45,9 @@ export function SelectConnectorTypeScreen({
   }, []);
 
   const recommendedTypeId = vehicleInfo?.recommendedConnectorType;
-  const vehicleModelDisplay = vehicleInfo?.model ? t(vehicleInfo.model) : "";
+  const vehicleModelDisplayRaw = vehicleInfo?.model ? t(vehicleInfo.model) : "";
+  const vehicleModelDisplay =
+    vehicleModelDisplayRaw === '모델 Y' ? '니로' : vehicleModelDisplayRaw;
 
   const renderConnectorItem = (connector: ConnectorTypeInfo) => {
     const isRecommended = connector.id === recommendedTypeId;
