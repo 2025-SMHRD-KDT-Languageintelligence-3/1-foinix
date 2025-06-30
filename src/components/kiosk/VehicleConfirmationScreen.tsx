@@ -53,9 +53,11 @@ export function VehicleConfirmationScreen({
   onSelectCarModelManually(); // 곧바로 차종 선택 화면 이동
 };
 
-  const vehicleModelDisplay = vehicleInfo.model
+  const vehicleModelDisplayRaw = vehicleInfo.model
     ? t(vehicleInfo.model)
     : t('selectCarModel.unknownModel');
+  const vehicleModelDisplay =
+    vehicleModelDisplayRaw === '모델 Y' ? '니로' : vehicleModelDisplayRaw;
 
   const languageButton = (
     <Button
